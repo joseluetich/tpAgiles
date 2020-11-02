@@ -1,4 +1,4 @@
-package clases;
+package src.clases;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +16,7 @@ public class Licencia {
     private Usuario usuario;
     private ArrayList<CopiaLicencia> copias;
 
-    public Licencia(String id, String observaciones, clases.tipoLicencia tipoLicencia, Integer numeroDeLicencia, Integer numeroDuplicado, Date fechaDeModificacion, Date fechaDeOtorgamiento, Date fechaDeVencimienot, Boolean enVigencia, Double costo, ArrayList<Clase> clases, ComprobanteDePago comprobanteDePago, Titular titular, Usuario usuario, ArrayList<CopiaLicencia> copias) {
+    public Licencia(String id, String observaciones, src.clases.tipoLicencia tipoLicencia, Integer numeroDeLicencia, Integer numeroDuplicado, Date fechaDeModificacion, Date fechaDeOtorgamiento, Date fechaDeVencimienot, Boolean enVigencia, Double costo, ArrayList<Clase> clases, ComprobanteDePago comprobanteDePago, Titular titular, Usuario usuario, ArrayList<CopiaLicencia> copias) {
         this.idLicencia = id;
         this.observaciones = observaciones;
         this.tipoLicencia = tipoLicencia;
@@ -41,11 +41,11 @@ public class Licencia {
         this.idLicencia = idLicencia;
     }
 
-    public clases.tipoLicencia getTipoLicencia() {
+    public src.clases.tipoLicencia getTipoLicencia() {
         return tipoLicencia;
     }
 
-    public void setTipoLicencia(clases.tipoLicencia tipoLicencia) {
+    public void setTipoLicencia(src.clases.tipoLicencia tipoLicencia) {
         this.tipoLicencia = tipoLicencia;
     }
 

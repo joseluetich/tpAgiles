@@ -1,4 +1,4 @@
-package clases;
+package src.clases;
 
 public enum tipoLicencia {
     PROFESIONAL, COMUN;

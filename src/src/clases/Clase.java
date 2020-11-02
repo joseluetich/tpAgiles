@@ -1,4 +1,4 @@
-package clases;
+package src.clases;
 
 public class Clase {
     private Integer idClase, edadMinima;
@@ -32,6 +32,7 @@ public class Clase {
         return tipo;
     }
 
+
     public void setTipo(tipoClase tipo) {
         this.tipo = tipo;
     }
@@ -44,3 +45,4 @@ public class Clase {
         this.licencia = licencia;
     }
 }
+
