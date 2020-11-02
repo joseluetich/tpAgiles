@@ -1,4 +1,4 @@
-package src.clases;
+package src.src.clases;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,7 +7,7 @@ public class Titular {
 
     private Integer idTitular;
     private tipoDeDocumento tipoDoc;
-    private String numeroDeDocumento, apellido, nombre, cuil, grupoSanguineo, direccion, codigoPostal;
+    private String numeroDeDocumento, apellido, nombre, cuil, grupoSanguineo, factorSanguineo, direccion, codigoPostal;
     private Boolean donante;
     private Date fechaDeNacimiento;
     private ArrayList<Licencia> licencias;
@@ -22,19 +22,37 @@ public class Titular {
 
     private Usuario creadoPor;
 
-    public Titular(tipoDeDocumento tipoDoc, String numeroDeDocumento, String apellido, String nombre, String cuil, String grupoSanguineo, String direccion, String codigoPostal, Boolean donante, Date fechaDeNacimiento, ArrayList<Licencia> licencias, Usuario creadoPor) {
+    public Titular(Integer idTitular, tipoDeDocumento tipoDoc, String numeroDeDocumento, String apellido, String nombre, String cuil, String grupoSanguineo, String factorSanguineo, String direccion, String codigoPostal, Boolean donante, Date fechaDeNacimiento, ArrayList<Licencia> licencias, Usuario creadoPor) {
+        this.idTitular = idTitular;
         this.tipoDoc = tipoDoc;
         this.numeroDeDocumento = numeroDeDocumento;
         this.apellido = apellido;
         this.nombre = nombre;
         this.cuil = cuil;
         this.grupoSanguineo = grupoSanguineo;
+        this.factorSanguineo = factorSanguineo;
         this.direccion = direccion;
         this.codigoPostal = codigoPostal;
         this.donante = donante;
         this.fechaDeNacimiento = fechaDeNacimiento;
         this.licencias = licencias;
         this.creadoPor = creadoPor;
+    }
+
+    public Integer getIdTitular() {
+        return idTitular;
+    }
+
+    public void setIdTitular(Integer idTitular) {
+        this.idTitular = idTitular;
+    }
+
+    public String getFactorSanguineo() {
+        return factorSanguineo;
+    }
+
+    public void setFactorSanguineo(String factorSanguineo) {
+        this.factorSanguineo = factorSanguineo;
     }
 
     public tipoDeDocumento getTipoDoc() {

@@ -1,4 +1,4 @@
-package src.clases;
+package src.src.clases;
 
 public enum motivosCopia {
     EXTRAVIO, ROBO, DETERIORO;

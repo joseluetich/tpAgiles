@@ -1,4 +1,7 @@
-package src.clases;
+package src.src.clases;
+
+import src.src.clases.Rol;
+import src.src.clases.tipoDeDocumento;
 
 import java.util.Date;
 

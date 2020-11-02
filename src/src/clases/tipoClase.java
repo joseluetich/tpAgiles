@@ -1,4 +1,4 @@
-package src.clases;
+package src.src.clases;
 
 public enum tipoClase {
     A, B, C, D, E, F, G;

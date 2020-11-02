@@ -1,4 +1,4 @@
-package src.clases;
+package src.src.clases;
 
 public class Clase {
     private Integer idClase, edadMinima;
