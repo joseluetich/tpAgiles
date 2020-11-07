@@ -1,31 +1,18 @@
 package interfaces;
-
-import javax.security.auth.login.CredentialException;
 import javax.swing.*;
 import java.awt.*;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.*;
-import javax.swing.plaf.BorderUIResource;
 import javax.swing.table.JTableHeader;
-
-import clases.Licencia;
-import interfaces.GestionCeldas;
-import interfaces.GestionEncabezadoTabla;
-import interfaces.ModeloTabla;
-import interfaces.ColumnasTabla;
-
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
 
 
 public class BusquedaDeTitular extends JFrame implements MouseListener{
@@ -36,30 +23,57 @@ public class BusquedaDeTitular extends JFrame implements MouseListener{
     private JCheckBox nombreCheckBox;
     private JCheckBox esDonanteCheckBox;
     private JButton ordenarButton;
-    private JComboBox comboBox1;
+    private JComboBox comboGrupoSanguineo;
     private JButton seleccionarButton;
     private JPanel CriteriosOrdenamiento;
-    private Container Contenedor;
-
-
     private JScrollPane scrollPaneTabla;
-
     ModeloTabla modelo;
     private int filasTabla;
     private int columnasTabla;
 
 
-
     public BusquedaDeTitular() {
         add(buscarTitularPanel);
         setTitle("BusquedaDeTitular");
-        //setSize(500,500);
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1121, 800);
+        setSize(1000, 500);
         iniciarComponentes();
         setLocationRelativeTo(null);
         construirTabla();
+
+
+        ordenarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if(apellidoCheckBox.isSelected() && !nombreCheckBox.isSelected() && !esDonanteCheckBox.isSelected() && comboGrupoSanguineo.getSelectedIndex()==0){
+                    ordenarPorApellido();
+                }
+
+                if(!apellidoCheckBox.isSelected() && nombreCheckBox.isSelected() && !esDonanteCheckBox.isSelected() && comboGrupoSanguineo.getSelectedIndex()==0){
+                    ordenarPorNombre();
+                }
+
+                if(!apellidoCheckBox.isSelected() && !nombreCheckBox.isSelected() && esDonanteCheckBox.isSelected() && comboGrupoSanguineo.getSelectedIndex()==0){
+                    ordenarEsDonante();
+                }
+
+                if(!apellidoCheckBox.isSelected() && !nombreCheckBox.isSelected() && !esDonanteCheckBox.isSelected() && comboGrupoSanguineo.getSelectedIndex()!=0){
+                    ordenarPorGrupoSanguineo();
+                }
+
+            }
+        });
+
+        seleccionarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+
+            }
+        });
+
+
 
     }
 
@@ -91,7 +105,8 @@ public class BusquedaDeTitular extends JFrame implements MouseListener{
         CriteriosOrdenamiento.add(apellidoCheckBox);
         CriteriosOrdenamiento.add(nombreCheckBox);
         CriteriosOrdenamiento.add(esDonanteCheckBox);
-        CriteriosOrdenamiento.add(comboBox1);
+        inicializarComboGrupoSanguineo();
+        CriteriosOrdenamiento.add(comboGrupoSanguineo);
         CriteriosOrdenamiento.add(ordenarButton);
         CriteriosOrdenamiento.add(seleccionarButton);
         buscarTitularPanel.add(CriteriosOrdenamiento, BorderLayout.AFTER_LAST_LINE);
@@ -271,6 +286,47 @@ public class BusquedaDeTitular extends JFrame implements MouseListener{
         // TODO Auto-generated method stub
 
     }
+
+    public void inicializarComboGrupoSanguineo(){
+        comboGrupoSanguineo.addItem("Grupo sanguíneo");
+        comboGrupoSanguineo.addItem("0");
+        comboGrupoSanguineo.addItem("A");
+        comboGrupoSanguineo.addItem("B");
+        comboGrupoSanguineo.addItem("AB");
+        comboGrupoSanguineo.setEditable(false);
+    }
+
+
+    //A-Z
+    public void ordenarPorApellido(){
+
+        JTable tablaOrdenada = new JTable();
+
+        for (int i = 0; i < licenciasVigentesTable.getRowCount(); i++) {
+            String apellido = licenciasVigentesTable.getValueAt(i, 0).toString();
+
+        }
+
+        licenciasVigentesTable = tablaOrdenada;
+
+    }
+
+    //A-Z
+    public void ordenarPorNombre(){
+
+    }
+
+    //grupo+ - grupo-
+    public void ordenarEsDonante(){
+
+    }
+
+
+    //donantes-no_donantes
+    public void ordenarPorGrupoSanguineo(){
+
+    }
+
 
 
 }
