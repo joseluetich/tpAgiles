@@ -14,7 +14,7 @@ public class ConexionDefault {
     private final String USER="E9GOjTASxz";
     private final String PASS="0EE2yqc1RP";
 
-    public void openConnection() {
+    public Connection openConnection() {
 
         Connection connect = null;
 
@@ -32,6 +32,7 @@ public class ConexionDefault {
             System.out.println("error "+ex.getMessage());
         }
 
+        return connect;
     }
 
 
