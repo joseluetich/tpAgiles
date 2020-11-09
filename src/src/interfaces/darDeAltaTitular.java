@@ -3,6 +3,9 @@ package interfaces;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+
+import bd.ConexionDefault;
 
 public class darDeAltaTitular {
     private JRadioButton radioButton1;
@@ -25,5 +28,7 @@ public class darDeAltaTitular {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+
+
     }
 }
