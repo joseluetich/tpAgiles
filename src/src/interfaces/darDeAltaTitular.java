@@ -6,11 +6,21 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 
 import bd.ConexionDefault;
+import com.toedter.calendar.JCalendar;
+
 
 public class darDeAltaTitular {
-    private JRadioButton radioButton1;
     private JPanel panel1;
     private JButton button1;
+    private JComboBox comboBoxTipoDni;
+    private JTextField textFieldNroDoc;
+    private JTextField textFieldApellido;
+    private JTextField textFieldNombre;
+    private JTextField textFieldDireccion;
+    private JComboBox comboBoxDireccion;
+    private JComboBox comboBoxGrupoS;
+    private JCheckBox siCheckBox;
+    private JButton confirmarButton;
 
 
     public darDeAltaTitular() {
@@ -28,7 +38,12 @@ public class darDeAltaTitular {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+        ConexionDefault conectar = new ConexionDefault();
+        Connection con = conectar.openConnection();
 
+    }
 
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 }
