@@ -14,7 +14,7 @@ public class ConectarBD {
 
     public ConectarBD() throws SQLException {
         ConexionDefault conectar = new ConexionDefault();
-        Connection con = conectar.openConnection();
+        con = conectar.openConnection();
         stmt = con.createStatement();
     }
 
