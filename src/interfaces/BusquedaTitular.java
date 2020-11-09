@@ -1,4 +1,6 @@
 package src.interfaces;
+import src.bd.ConexionDefault;
+
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.JFrame;
@@ -10,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.Connection;
 import java.util.ArrayList;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -116,6 +119,9 @@ public class BusquedaTitular extends JFrame implements MouseListener{
     public static void main (String [] args) {
         BusquedaTitular busquedaTitular = new BusquedaTitular();
         busquedaTitular.setVisible(true);
+
+        ConexionDefault conectar = new ConexionDefault();
+        Connection con = conectar.openConnection();
     }
 
 //Metodo que permite construir la tabla de licencias
