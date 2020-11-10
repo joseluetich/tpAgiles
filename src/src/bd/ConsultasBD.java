@@ -13,7 +13,7 @@ public class ConsultasBD {
                 "WHERE (tipoDeDocumento="+"'"+tipoDoc+"'"+
                 "AND numeroDeDocumento="+nroDoc+")";
         ResultSet rs = stmt.executeQuery(SQL);
-        while (rs.next()){
+        while (rs.next()) {
             retornoBD = rs.getString("nombre")+","+rs.getString("apellido")+","+rs.getString("cuil")+","+rs.getString("direccion")+","+rs.getString("fechaDeNacimiento")+","+rs.getString("grupoSanguineo")+","+rs.getString("donante")+","+rs.getString("codigoPostal");
         }
         return retornoBD;

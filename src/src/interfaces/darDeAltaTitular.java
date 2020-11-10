@@ -3,40 +3,93 @@ package interfaces;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-
-import bd.ConexionDefault;
-import com.toedter.calendar.JCalendar;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Date;
 import com.toedter.calendar.JDateChooser;
 
+import clases.*;
+import logica.*;
 
 public class darDeAltaTitular {
     private JPanel panel1;
-    private JButton button1;
+    private JButton cancelarButton;
     private JComboBox comboBoxTipoDni;
     private JTextField textFieldNroDoc;
     private JTextField textFieldApellido;
     private JTextField textFieldNombre;
     private JTextField textFieldDireccion;
-    private JComboBox comboBoxDireccion;
+    private JComboBox comboBoxClase;
     private JComboBox comboBoxGrupoS;
     private JCheckBox siCheckBox;
     private JButton confirmarButton;
-    private JDateChooser JDateChooser1;
-    private JCalendar JCalendar1;
+    private JDateChooser JDateFechaNac;
 
 
     public darDeAltaTitular() {
-        button1.addActionListener(new ActionListener() {
+        cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(null,"HOLA");
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(panel1);
+                frame.dispose();
+            }
+        });
+
+        confirmarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String tipoDeDoc = comboBoxTipoDni.getSelectedItem().toString();
+                String numeroDoc = textFieldNroDoc.getText().toString();
+                String apellido = textFieldApellido.getText().toString();
+                String nombre = textFieldNombre.getText().toString();
+                String direccion = textFieldDireccion.getText().toString();
+                String clase = comboBoxClase.getSelectedItem().toString();
+                String grupoS = comboBoxGrupoS.getSelectedItem().toString();
+                Boolean donante = siCheckBox.isSelected();
+                Date fechaNac = JDateFechaNac.getDate();
+
+                if(validacionesAltaTitular.validar()) {
+                    JOptionPane.showMessageDialog(null, "Operación realizada correctamente");
+                }
+            }
+        });
+
+        textFieldNroDoc.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (Character.isDigit(c)) {
+                } else {
+                    evt.consume();
+                }
+            }
+        });
+
+        textFieldApellido.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (Character.isLetter(c)) {
+                } else{
+                    evt.consume();
+                }
+            }
+        });
+
+        textFieldNombre.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (Character.isLetter(c)) {
+                } else{
+                    evt.consume();
+                }
             }
         });
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("App");
+        JFrame frame = new JFrame("Dar de alta titular");
         frame.setContentPane(new darDeAltaTitular().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -47,6 +100,6 @@ public class darDeAltaTitular {
     }
 
     private void createUIComponents() {
-        JDateChooser1 = new JDateChooser();
+        JDateFechaNac = new JDateChooser();
     }
 }

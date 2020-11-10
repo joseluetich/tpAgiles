@@ -25,7 +25,7 @@
               <text value="Tipo de documento"/>
             </properties>
           </component>
-          <component id="88249" class="javax.swing.JButton" binding="button1" default-binding="true">
+          <component id="88249" class="javax.swing.JButton" binding="cancelarButton">
             <constraints>
               <grid row="9" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -83,7 +83,7 @@
               <text value="Clase solicitada"/>
             </properties>
           </component>
-          <component id="4dcbf" class="javax.swing.JComboBox" binding="comboBoxDireccion">
+          <component id="4dcbf" class="javax.swing.JComboBox" binding="comboBoxClase">
             <constraints>
               <grid row="6" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
                 <minimum-size width="180" height="22"/>
@@ -226,9 +226,13 @@
             </constraints>
             <properties/>
           </component>
-          <component id="8eb05" class="com.toedter.calendar.JDateChooser" binding="JDateChooser1" custom-create="true" default-binding="true">
+          <component id="8eb05" class="com.toedter.calendar.JDateChooser" binding="JDateFechaNac" custom-create="true">
             <constraints>
-              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="180" height="22"/>
+                <preferred-size width="180" height="22"/>
+                <maximum-size width="180" height="22"/>
+              </grid>
             </constraints>
           </component>
         </children>
