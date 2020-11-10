@@ -1,14 +1,12 @@
 package logica;
 
 import bd.ConsultasBD;
-import clases.tipoLicencia;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
-import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
@@ -23,7 +21,11 @@ public class EmitirLicencia {
     }
 
     public static String buscarTitular(String nroDoc, String tipoDoc) throws SQLException {
-    return ConsultasBD.buscarTitularBD(nroDoc,tipoDoc);
+        return ConsultasBD.buscarTitularBD(nroDoc,tipoDoc);
+    }
+
+    public static int getIdTitular(String nroDoc, String tipoDoc) throws SQLException{
+        return ConsultasBD.getIdTitularBD(nroDoc,tipoDoc);
     }
 
     public static ArrayList<String> getClaseByTitular(String nroDoc, String tipoDoc) throws SQLException{
@@ -47,8 +49,8 @@ public class EmitirLicencia {
         return periodo.getYears();
     }
 
-    public static void emitirLicencia(Integer numeroDeLicencia, tipoLicencia tipo, Date fechaDeModificacion, Date fechaDeOtorgamiento, Date fechaDeVencimiento, boolean enVigencia, double costo, String observaciones, Integer idTitular){
-        emitirLicenciaBD();
+    public static void emitirLicencia(Integer numeroDeLicencia, String tipo, String fechaDeModificacion, String fechaDeOtorgamiento, String fechaDeVencimiento, boolean enVigencia, double costo, String observaciones, Integer idTitular) throws SQLException {
+        emitirLicenciaBD(numeroDeLicencia,tipo,fechaDeModificacion,fechaDeOtorgamiento,fechaDeVencimiento,enVigencia,costo,observaciones,idTitular);
     }
 
 }
