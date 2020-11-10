@@ -2,10 +2,10 @@ package src.clases;
 
 public class Clase {
     private Integer idClase, edadMinima;
-    private tipoClase tipo;
+    private String tipo;
     private Licencia licencia;
 
-    public Clase(Integer idClase, Integer edadMinima, tipoClase tipo, Licencia licencia) {
+    public Clase(Integer idClase, Integer edadMinima, String tipo, Licencia licencia) {
         this.idClase = idClase;
         this.edadMinima = edadMinima;
         this.tipo = tipo;
@@ -28,12 +28,11 @@ public class Clase {
         this.edadMinima = edadMinima;
     }
 
-    public tipoClase getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-
-    public void setTipo(tipoClase tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 

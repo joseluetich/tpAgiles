@@ -10,6 +10,9 @@ public class CopiaLicencia {
     private motivosCopia motivos;
     private ComprobanteDePago comprobante;
 
+    public CopiaLicencia() {
+    }
+
     public CopiaLicencia(Integer idCopiaLicencia, Usuario usuario, Licencia licencia, Integer numeroDeCopia, Date fechaDeEmision, motivosCopia motivos, ComprobanteDePago comprobante) {
         this.idCopiaLicencia = idCopiaLicencia;
         this.usuario = usuario;

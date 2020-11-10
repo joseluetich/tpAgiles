@@ -10,9 +10,12 @@ import javax.swing.table.JTableHeader;
 import javax.swing.JLabel;
 import java.awt.event.*;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+
+import static src.bd.ConsultasBD.*;
 
 public class BusquedaTitular extends JFrame implements MouseListener{
     private JPanel buscarTitularPanel;
@@ -22,13 +25,14 @@ public class BusquedaTitular extends JFrame implements MouseListener{
     private JButton seleccionarButton;
     private JComboBox documentoComboBox;
     private JPanel buscarPanel;
+    private JButton atrásButton;
     private JScrollPane scrollPaneTabla;
     ModeloTabla modelo;
-    private int filasTabla;
+    private int filasTabla = 0;
     private int columnasTabla;
 
 
-    public BusquedaTitular() {
+    public BusquedaTitular() throws SQLException {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -47,6 +51,7 @@ public class BusquedaTitular extends JFrame implements MouseListener{
         iniciarComponentes();
         setLocationRelativeTo(null);
         construirTabla();
+        atrásButton.setVisible(false);
 
         buscarButton.addActionListener(new ActionListener() {
             @Override
@@ -59,7 +64,15 @@ public class BusquedaTitular extends JFrame implements MouseListener{
                 num_doc = documentoTextField.getText().toString();
 
                 if(!tipoDoc.equals("Seleccionar") && !num_doc.isEmpty()) {
-                    buscarTitular(tipoDoc, num_doc);
+                    try {
+                        buscarTitular(tipoDoc, num_doc);
+                        atrásButton.setVisible(true);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "Debe completar ambos campos para buscar un titular");
                 }
             }
         });
@@ -67,39 +80,46 @@ public class BusquedaTitular extends JFrame implements MouseListener{
         seleccionarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int fila = licenciasTable.getSelectedRow();
-                String  nombre = modelo.getValueAt(licenciasTable.getSelectedRow(),1).toString();
-                String apellido = modelo.getValueAt(licenciasTable.getSelectedRow(),0).toString();
                 String tipoDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),2).toString();
                 String numDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),3).toString();
-                String fechaNacimiento = "5/5/1999";
-                String direccion = "Pasaje ingenieros 7045";
-                String claseSolicitada = "C";
-                String grupo_y_factor_sanguineo = "B+";
-                String donante = "Sí";
+                String claseSolicitada = modelo.getValueAt(licenciasTable.getSelectedRow(),5).toString();
+                String idLicencia = modelo.getValueAt(licenciasTable.getSelectedRow(), 4).toString();
 
-                DatosTitular datosTitular = new DatosTitular(tipoDoc, nombre, apellido,numDoc,fechaNacimiento,direccion,claseSolicitada,grupo_y_factor_sanguineo,donante);
+                String datosTitularBD = "";
+                try {
+                    datosTitularBD = buscarTitularBD(numDoc,tipoDoc);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+                assert datosTitularBD != null;
+
+                DatosTitular datosTitular = new DatosTitular(datosTitularBD, tipoDoc, numDoc, claseSolicitada);
                 datosTitular.setVisible(true);
             }
         });
 
-        /*addWindowListener(new WindowAdapter() {
+        atrásButton.addActionListener(new ActionListener() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    construirTabla();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+                atrásButton.setVisible(false);
             }
-        });*/
+        });
+
     }
 
-    public static void main (String [] args) {
+    public static void main (String [] args)throws SQLException{
+
         BusquedaTitular busquedaTitular = new BusquedaTitular();
         busquedaTitular.setVisible(true);
 
         ConexionDefault conectar = new ConexionDefault();
         Connection con = conectar.openConnection();
     }
-
-
 
     private void iniciarComponentes() {
 
@@ -116,13 +136,12 @@ public class BusquedaTitular extends JFrame implements MouseListener{
 
     }
 
-
 //Metodo que permite construir la tabla de licencias
 //se crean primero las columnas y luego se asigna la información
 
-    private void construirTabla() {
+    private void construirTabla() throws SQLException {
 
-        ArrayList<String> titulosList = new ArrayList<String>();
+        ArrayList<String> titulosList = new ArrayList<>();
 
         titulosList.add("Apellido");
         titulosList.add("Nombre");
@@ -145,74 +164,41 @@ public class BusquedaTitular extends JFrame implements MouseListener{
     }
 
 
-    private Object[][] obtenerMatrizDatos(ArrayList titulosList) {
+    private Object[][] obtenerMatrizDatos(ArrayList titulosList) throws SQLException {
         //se crea la matriz donde las filas son dinamicas pues corresponde mientras que las columnas son estaticas
 
-        String informacion[][] = new String[101][titulosList.size()];
+        ArrayList<String> licenciasVigentes = new ArrayList<String>();
+        String informacion[][] = new String[0][0];
 
-        informacion[0][ColumnasTabla.APELLIDO] = "Triverio";
-        informacion[0][ColumnasTabla.NOMBRE] = "Fiorella";
-        informacion[0][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[0][ColumnasTabla.DOCUMENTO] = "1";
-        informacion[0][ColumnasTabla.NUM_LICENCIA] = "1";
-        informacion[0][ColumnasTabla.CLASE_LICENCIA] = "B1";
+        try {
+            licenciasVigentes = getLicenciasVigentes();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        assert licenciasVigentes != null;
+        if(licenciasVigentes.isEmpty()){
+            JOptionPane.showMessageDialog(null, "No se pudieron encontrar licencias vigentes");
+        }
+        else{
+            ArrayList<String> licenciasVigentesAux = new ArrayList<String>(licenciasVigentes);
 
-        informacion[1][ColumnasTabla.APELLIDO] = "Luetich";
-        informacion[1][ColumnasTabla.NOMBRE] = "Josefina";
-        informacion[1][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[1][ColumnasTabla.DOCUMENTO] = "2";
-        informacion[1][ColumnasTabla.NUM_LICENCIA] = "2";
-        informacion[1][ColumnasTabla.CLASE_LICENCIA] = "B1";
+            while (!licenciasVigentesAux.isEmpty()) {
+                String[] datosSplitteadosLicencias = licenciasVigentesAux.get(0).split(",");
+                String idLicencia = datosSplitteadosLicencias[0];
 
-        informacion[2][ColumnasTabla.APELLIDO] = "Sanchez";
-        informacion[2][ColumnasTabla.NOMBRE] = "Exequiel";
-        informacion[2][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[2][ColumnasTabla.DOCUMENTO] = "3";
-        informacion[2][ColumnasTabla.NUM_LICENCIA] = "3";
-        informacion[2][ColumnasTabla.CLASE_LICENCIA] = "B1";
+                ArrayList<String> clasesBD = getClaseByID(idLicencia);
 
-        informacion[3][ColumnasTabla.APELLIDO] = "Guiter";
-        informacion[3][ColumnasTabla.NOMBRE] = "Alejandro";
-        informacion[3][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[3][ColumnasTabla.DOCUMENTO] = "4";
-        informacion[3][ColumnasTabla.NUM_LICENCIA] = "4";
-        informacion[3][ColumnasTabla.CLASE_LICENCIA] = "B1";
+                for (int j = 0; j < clasesBD.size(); j++) filasTabla++;
+                licenciasVigentesAux.remove(0);
+            }
 
-        informacion[4][ColumnasTabla.APELLIDO] = "Eceiza";
-        informacion[4][ColumnasTabla.NOMBRE] = "Belen";
-        informacion[4][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[4][ColumnasTabla.DOCUMENTO] = "5";
-        informacion[4][ColumnasTabla.NUM_LICENCIA] = "5";
-        informacion[4][ColumnasTabla.CLASE_LICENCIA] = "B1";
+            System.out.println(filasTabla);
+            System.out.println(licenciasVigentesAux);
+            System.out.println(licenciasVigentes);
 
-        informacion[5][ColumnasTabla.APELLIDO] = "David";
-        informacion[5][ColumnasTabla.NOMBRE] = "Fausto";
-        informacion[5][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[5][ColumnasTabla.DOCUMENTO] = "6";
-        informacion[5][ColumnasTabla.NUM_LICENCIA] = "6";
-        informacion[5][ColumnasTabla.CLASE_LICENCIA] = "B1";
-
-        informacion[6][ColumnasTabla.APELLIDO] = "Acosta";
-        informacion[6][ColumnasTabla.NOMBRE] = "Diego";
-        informacion[6][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[6][ColumnasTabla.DOCUMENTO] = "7";
-        informacion[6][ColumnasTabla.NUM_LICENCIA] = "7";
-        informacion[6][ColumnasTabla.CLASE_LICENCIA] = "B1";
-
-        informacion[7][ColumnasTabla.APELLIDO] = "Acosta";
-        informacion[7][ColumnasTabla.NOMBRE] = "Diego";
-        informacion[7][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[7][ColumnasTabla.DOCUMENTO] = "7";
-        informacion[7][ColumnasTabla.NUM_LICENCIA] = "8";
-        informacion[7][ColumnasTabla.CLASE_LICENCIA] = "C";
-
-        for(int i=8; i<101; i++) {
-            informacion[i][ColumnasTabla.APELLIDO] = "Apellido";
-            informacion[i][ColumnasTabla.NOMBRE] = "Nombre";
-            informacion[i][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-            informacion[i][ColumnasTabla.DOCUMENTO] = Integer.toString(i+1);
-            informacion[i][ColumnasTabla.NUM_LICENCIA] = Integer.toString(i+1);
-            informacion[i][ColumnasTabla.CLASE_LICENCIA] = "B1";
+            informacion = new String[filasTabla][titulosList.size()];
+            seteoCamposLicencias(licenciasVigentes, informacion);
+            filasTabla = 0;
         }
 
         return informacion;
@@ -223,12 +209,13 @@ public class BusquedaTitular extends JFrame implements MouseListener{
 // así como los tipos de datos que va a poder soportar.
 
     private void construirTabla(String[] titulos, Object[][] data) {
-        modelo=new ModeloTabla(data, titulos);
+        modelo = new ModeloTabla(data, titulos);
 
         //se asigna el modelo a la tabla
         licenciasTable.setModel(modelo);
 
-        filasTabla=licenciasTable.getRowCount();
+        //filasTabla=data.length;
+        //filasTabla=licenciasTable.getRowCount();
         columnasTabla=licenciasTable.getColumnCount();
 
         //se asigna el tipo de dato que tendrán las celdas de cada columna definida respectivamente para validar su personalización
@@ -246,12 +233,12 @@ public class BusquedaTitular extends JFrame implements MouseListener{
         licenciasTable.setGridColor(new java.awt.Color(0, 0, 0));
 
         //Se define el tamaño de largo para cada columna y su contenido
-        licenciasTable.getColumnModel().getColumn(ColumnasTabla.APELLIDO).setPreferredWidth(10);
-        licenciasTable.getColumnModel().getColumn(ColumnasTabla.NOMBRE).setPreferredWidth(10);
-        licenciasTable.getColumnModel().getColumn(ColumnasTabla.TIPO_DOCUMENTO).setPreferredWidth(10);
+        licenciasTable.getColumnModel().getColumn(ColumnasTabla.APELLIDO).setMinWidth(10);
+        licenciasTable.getColumnModel().getColumn(ColumnasTabla.NOMBRE).setMinWidth(10);
+        licenciasTable.getColumnModel().getColumn(ColumnasTabla.TIPO_DOCUMENTO).setMinWidth(13);
         licenciasTable.getColumnModel().getColumn(ColumnasTabla.DOCUMENTO).setPreferredWidth(10);
         licenciasTable.getColumnModel().getColumn(ColumnasTabla.NUM_LICENCIA).setPreferredWidth(10);
-        licenciasTable.getColumnModel().getColumn(ColumnasTabla.CLASE_LICENCIA).setPreferredWidth(10);
+        licenciasTable.getColumnModel().getColumn(ColumnasTabla.CLASE_LICENCIA).setPreferredWidth(5);
 
         //personaliza el encabezado
         JTableHeader jtableHeader = licenciasTable.getTableHeader();
@@ -260,6 +247,8 @@ public class BusquedaTitular extends JFrame implements MouseListener{
 
         //se asigna la tabla al scrollPane
         //scrollPaneTabla.setViewportView(licenciasTable);
+
+
     }
 
     @Override
@@ -295,11 +284,10 @@ public class BusquedaTitular extends JFrame implements MouseListener{
 
     }
 
-    public void buscarTitular(String tipoDoc, String num_doc){
+    public void buscarTitular(String tipoDoc, String num_doc) throws SQLException {
 
         int filas = licenciasTable.getRowCount();
         ArrayList<String> titulosList = new ArrayList<String>();
-        String nueva_info[][] = new String[101][titulosList.size()];
 
         titulosList.add("Apellido");
         titulosList.add("Nombre");
@@ -308,90 +296,83 @@ public class BusquedaTitular extends JFrame implements MouseListener{
         titulosList.add("Num. licencia");
         titulosList.add("Clase licencia");
 
-        String titulos[] = new String[titulosList.size()];
+        String[] titulos = new String[titulosList.size()];
         for (int i = 0; i < titulos.length; i++) {
             titulos[i]=titulosList.get(i);
         }
 
-        String informacion[][] = new String[101][titulosList.size()];
+        Object[][] informacion = obtenerMatrizDatos(titulosList);
 
-        informacion[0][ColumnasTabla.APELLIDO] = "Triverio";
-        informacion[0][ColumnasTabla.NOMBRE] = "Fiorella";
-        informacion[0][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[0][ColumnasTabla.DOCUMENTO] = "1";
-        informacion[0][ColumnasTabla.NUM_LICENCIA] = "1";
-        informacion[0][ColumnasTabla.CLASE_LICENCIA] = "B1";
-
-        informacion[1][ColumnasTabla.APELLIDO] = "Luetich";
-        informacion[1][ColumnasTabla.NOMBRE] = "Josefina";
-        informacion[1][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[1][ColumnasTabla.DOCUMENTO] = "2";
-        informacion[1][ColumnasTabla.NUM_LICENCIA] = "2";
-        informacion[1][ColumnasTabla.CLASE_LICENCIA] = "B1";
-
-        informacion[2][ColumnasTabla.APELLIDO] = "Sanchez";
-        informacion[2][ColumnasTabla.NOMBRE] = "Exequiel";
-        informacion[2][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[2][ColumnasTabla.DOCUMENTO] = "3";
-        informacion[2][ColumnasTabla.NUM_LICENCIA] = "3";
-        informacion[2][ColumnasTabla.CLASE_LICENCIA] = "B1";
-
-        informacion[3][ColumnasTabla.APELLIDO] = "Guiter";
-        informacion[3][ColumnasTabla.NOMBRE] = "Alejandro";
-        informacion[3][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[3][ColumnasTabla.DOCUMENTO] = "4";
-        informacion[3][ColumnasTabla.NUM_LICENCIA] = "4";
-        informacion[3][ColumnasTabla.CLASE_LICENCIA] = "B1";
-
-        informacion[4][ColumnasTabla.APELLIDO] = "Eceiza";
-        informacion[4][ColumnasTabla.NOMBRE] = "Belen";
-        informacion[4][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[4][ColumnasTabla.DOCUMENTO] = "5";
-        informacion[4][ColumnasTabla.NUM_LICENCIA] = "5";
-        informacion[4][ColumnasTabla.CLASE_LICENCIA] = "B1";
-
-        informacion[5][ColumnasTabla.APELLIDO] = "David";
-        informacion[5][ColumnasTabla.NOMBRE] = "Fausto";
-        informacion[5][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[5][ColumnasTabla.DOCUMENTO] = "6";
-        informacion[5][ColumnasTabla.NUM_LICENCIA] = "6";
-        informacion[5][ColumnasTabla.CLASE_LICENCIA] = "B1";
-
-        informacion[6][ColumnasTabla.APELLIDO] = "Acosta";
-        informacion[6][ColumnasTabla.NOMBRE] = "Diego";
-        informacion[6][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[6][ColumnasTabla.DOCUMENTO] = "7";
-        informacion[6][ColumnasTabla.NUM_LICENCIA] = "7";
-        informacion[6][ColumnasTabla.CLASE_LICENCIA] = "B1";
-
-        informacion[7][ColumnasTabla.APELLIDO] = "Acosta";
-        informacion[7][ColumnasTabla.NOMBRE] = "Diego";
-        informacion[7][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-        informacion[7][ColumnasTabla.DOCUMENTO] = "7";
-        informacion[7][ColumnasTabla.NUM_LICENCIA] = "8";
-        informacion[7][ColumnasTabla.CLASE_LICENCIA] = "C";
-
-        for(int i=8; i<101; i++) {
-            informacion[i][ColumnasTabla.APELLIDO] = "Apellido";
-            informacion[i][ColumnasTabla.NOMBRE] = "Nombre";
-            informacion[i][ColumnasTabla.TIPO_DOCUMENTO] = "DNI";
-            informacion[i][ColumnasTabla.DOCUMENTO] = Integer.toString(i+1);
-            informacion[i][ColumnasTabla.NUM_LICENCIA] = Integer.toString(i+1);
-            informacion[i][ColumnasTabla.CLASE_LICENCIA] = "B1";
-        }
-
+        String[][] nuevaInfoAux = new String[informacion.length][titulosList.size()];
         int j=0;
 
         for(int i=0; i<filas; i++){
             if(informacion[i][2].equals(tipoDoc) && informacion[i][3].equals(num_doc)){
-                String[] filaTemp = informacion[i];
-                nueva_info[j] = filaTemp;
+                nuevaInfoAux[j] = (String[]) informacion[i];
                 j++;
             }
         }
+        String[][] nuevaInfo = new String[j][titulosList.size()];
+        for(int i=0; i<j; i++){
+            nuevaInfo[i] = nuevaInfoAux[i];
+        }
 
-        construirTabla(titulos, nueva_info);
+        if(nuevaInfo.length==0) {
+            JOptionPane.showMessageDialog(null, "No se encontraron titulares");
+            construirTabla(titulos, informacion);
+        } else {
+            construirTabla(titulos, nuevaInfo);
+        }
 
+    }
+
+    public void seteoCamposLicencias(ArrayList<String> licenciasVigentes, String[][] informacion) {
+
+        int fila = 0;
+
+        while (!licenciasVigentes.isEmpty()) {
+
+            String[] datosSplitteadosLicencias = licenciasVigentes.get(0).split(",");
+
+            String idLicencia = datosSplitteadosLicencias[0];
+            String titular = datosSplitteadosLicencias[1];
+            String num_licencia = datosSplitteadosLicencias[2];
+
+            String titularBD = "";
+            try {
+                titularBD = getTitularByID(titular);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            assert titularBD != null;
+
+            String[] datosSplitteadosTitular = titularBD.split(",");
+
+            String tipoDoc = datosSplitteadosTitular[0];
+            String numDoc = datosSplitteadosTitular[1];
+            String apellido = datosSplitteadosTitular[2];
+            String nombre = datosSplitteadosTitular[3];
+
+            ArrayList<String> clasesBD = new ArrayList<String>();
+            try {
+                clasesBD = getClaseByID(idLicencia);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            assert clasesBD != null;
+
+            for (int j = 0; j < clasesBD.size(); j++) {
+                informacion[fila][ColumnasTabla.APELLIDO] = apellido;
+                informacion[fila][ColumnasTabla.NOMBRE] = nombre;
+                informacion[fila][ColumnasTabla.TIPO_DOCUMENTO] = tipoDoc;
+                informacion[fila][ColumnasTabla.DOCUMENTO] = numDoc;
+                informacion[fila][ColumnasTabla.NUM_LICENCIA] = num_licencia;
+                informacion[fila][ColumnasTabla.CLASE_LICENCIA] = clasesBD.get(j);
+                fila++;
+            }
+
+            licenciasVigentes.remove(0);
+        }
 
     }
 
