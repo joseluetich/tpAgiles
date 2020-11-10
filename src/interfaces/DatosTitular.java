@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class DatosTitular extends JFrame {
 
@@ -21,21 +22,14 @@ public class DatosTitular extends JFrame {
     private JButton modificarDatosButton;
     private JButton siguienteButton;
 
-    public DatosTitular(String tipoDoc, String  nombre, String apellido, String numDoc, String fechaNacimiento, String direccion, String claseSolicitada, String grupo_y_factor_sanguineo, String donante) {
+    public DatosTitular(String DatosTitular, String tipoDoc, String numDoc, String claseSolicitada) {
         add(datosTitularPanel);
         setTitle("Datos del Titular");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setSize(550, 350);
 
-        tipoDocumentoTextField.setText(tipoDoc);
-        nombreTextField.setText(apellido.toUpperCase()+", "+nombre.toUpperCase());
-        fechaNacimientoTextField.setText(fechaNacimiento);
-        direccionTextField.setText(direccion);
-        claseTextField.setText(claseSolicitada);
-        grupoSanguineoTextField.setText(grupo_y_factor_sanguineo);
-        donanteTextField.setText(donante);
-        documentoTextField.setText(numDoc);
+        seteoCamposTitular(DatosTitular, tipoDoc, numDoc, claseSolicitada);
 
         /*try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -57,12 +51,37 @@ public class DatosTitular extends JFrame {
         });
     }
 
-    public static void main (String [] args) {
+    public static void main (String [] args) throws SQLException {
         BusquedaTitular busquedaTitular = new BusquedaTitular();
         busquedaTitular.setVisible(true);
 
         ConexionDefault conectar = new ConexionDefault();
         Connection con = conectar.openConnection();
+    }
+
+    public void seteoCamposTitular(String datosTitularBD, String tipoDoc, String numDoc, String claseSolicitada){
+
+        String[] datosSplitteados = datosTitularBD.split(",");
+
+        String nombre = datosSplitteados[0];
+        String apellido = datosSplitteados[1];
+        //String cuil = datosSplitteados[2];
+        String direccion = datosSplitteados[3];
+        String fechaNacimiento = datosSplitteados[4];
+        String grupoSanguineo = datosSplitteados[5];
+        String donanteOrganos = datosSplitteados[6];
+        //String codigoPostal = datosSplitteados[7];
+
+        tipoDocumentoTextField.setText(tipoDoc);
+        nombreTextField.setText(apellido.toUpperCase()+", "+nombre.toUpperCase());
+        fechaNacimientoTextField.setText(fechaNacimiento);
+        direccionTextField.setText(direccion);
+        claseTextField.setText(claseSolicitada);
+        grupoSanguineoTextField.setText(grupoSanguineo);
+        donanteTextField.setText(donanteOrganos);
+        documentoTextField.setText(numDoc);
+
+
     }
 
 
