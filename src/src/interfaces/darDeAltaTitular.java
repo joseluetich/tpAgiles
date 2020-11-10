@@ -7,6 +7,7 @@ import java.sql.Connection;
 
 import bd.ConexionDefault;
 import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
 
 
 public class darDeAltaTitular {
@@ -21,6 +22,8 @@ public class darDeAltaTitular {
     private JComboBox comboBoxGrupoS;
     private JCheckBox siCheckBox;
     private JButton confirmarButton;
+    private JDateChooser JDateChooser1;
+    private JCalendar JCalendar1;
 
 
     public darDeAltaTitular() {
@@ -38,12 +41,12 @@ public class darDeAltaTitular {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        ConexionDefault conectar = new ConexionDefault();
-        Connection con = conectar.openConnection();
+        //ConexionDefault conectar = new ConexionDefault();
+        //Connection con = conectar.openConnection();
 
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
+        JDateChooser1 = new JDateChooser();
     }
 }
