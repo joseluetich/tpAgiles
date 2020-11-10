@@ -7,91 +7,115 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Period;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.time.*;
+
 import bd.ConexionDefault;
 
 
 public class CalcularVigenciaLicencia {
 
 
-    public static Date calcularVigencia(Date fechaOtorgamiento, Date fechaCumpleanios, String dniTitular, String idTitular) throws SQLException {
+    public static Date calcularVigencia( Date fechaCumpleanios, String dniTitular, String idTitular) throws SQLException, ParseException {
 
-        Calendar calActual = Calendar.getInstance();
-        Date fechaActual = new Date();
+        //Los meses en date empiezan en 1 y en time en 0
+        fechaCumpleanios.setMonth(fechaCumpleanios.getMonth()-1);
+        //convierto de Date a Time
+        LocalDate fechaConvertida = fechaCumpleanios.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        System.out.println(fechaConvertida);
 
-        System.out.println(fechaCumpleanios.getYear());
-        System.out.println("que chucha imprime esto: "+fechaActual);
+        LocalDate fechaCumple = LocalDate.of(fechaConvertida.getYear(),fechaConvertida.getMonth(),fechaConvertida.getDayOfMonth());
+        LocalDate fechaActual = LocalDate.now();
 
-        int anios = fechaActual.getYear()-fechaCumpleanios.getYear();
-        fechaCumpleanios.setYear(fechaActual.getYear());
-        calActual.setTime(fechaCumpleanios);
+        LocalDate fechaOtorgamiento = LocalDate.of(fechaActual.getYear(),fechaConvertida.getMonth(),fechaConvertida.getDayOfMonth());
+        System.out.println("Fecha cumpleaños: "+fechaCumple+ " Fecha actual: "+fechaActual);
+        int anios= (fechaActual.getYear()-fechaCumple.getYear());
+        int mes = (fechaCumple.getMonthValue()- fechaActual.getMonthValue());
+        int dias= (fechaCumple.getDayOfMonth()-fechaActual.getDayOfMonth());
+
+        System.out.println("edad: "+anios+ " Meses: "+mes+ " Dias: "+ dias);
+
         String retornoBD = buscarLicencia(dniTitular,idTitular);
-        System.out.println(retornoBD);
-        System.out.println(anios);
+        System.out.println("base de datos retorna:  "+retornoBD);
 
+        if(anios<17) {
+            System.out.println("No se le puede otorgar una licencia, edad minima 17 años 1");
+            return fechaCumpleanios;
+        }
+        if(anios>=17 && mes>0 && anios <21){
+            System.out.println("No se le puede otorgar una licencia, edad minima 17 años 2");
+            return fechaCumpleanios;
+        }
 
         //si no tuvo licencia y es menor a 21 => licencia por 1 años
-        if(anios<21 && retornoBD== ""){
-            calActual.add(Calendar.YEAR, 1);
-            return calActual.getTime();
+        if(anios<=21 && retornoBD.isEmpty()){
+            fechaOtorgamiento=fechaOtorgamiento.plusYears(1);
+            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
+            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
+            return fechaOtorgDate;
         }
 
         //si tuvo licencia y es menor de 21 => licencia por 3 año
-        if(anios<21 && !(retornoBD== "")){
-            calActual.add(Calendar.YEAR, 3);
-            return calActual.getTime();
+        if(anios<=21 && !(retornoBD.isEmpty())){
+            fechaOtorgamiento=fechaOtorgamiento.plusYears(3);
+            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
+            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
+            return fechaOtorgDate;
         }
 
         //entre 21 y 46=> licencia por 5 años
         if(anios>21 && anios<46){
-            calActual.add(Calendar.YEAR, 5);
-            return calActual.getTime();
+            fechaOtorgamiento=fechaOtorgamiento.plusYears(5);
+            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
+            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
+            return fechaOtorgDate;
         }
-        //entre 47 y 60 => licencia por 4 años
-        if(anios>47 && anios<60){
-            calActual.add(Calendar.YEAR, 4);
-            return calActual.getTime();
+        //entre 46 y 60 => licencia por 4 años
+        if(anios>=46 && anios<60){
+            fechaOtorgamiento=fechaOtorgamiento.plusYears(4);
+            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
+            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
+            return fechaOtorgDate;
         }
-        //entre 61 y 70 => licencia por 1 año
-        if(anios>61 && anios<70){
-            calActual.add(Calendar.YEAR, 1);
-            return calActual.getTime();
+        //entre 60 y 70 => licencia por 1 año
+        if(anios>=60 && anios<70){
+            fechaOtorgamiento=fechaOtorgamiento.plusYears(1);
+            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
+            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
+            return fechaOtorgDate;
         }
 
-        return fechaActual; //hubo un error
+        return fechaCumpleanios; //hubo un error
     }
 
 
 
-    public static void main(String[] args) throws SQLException {
-        Date fechaOtor = new Date(2020 , 11 , 8);
-        Date fechaCumpl = new Date(1998 , 10 , 1);
-        Date fechaPrueba = new Date();
-        //fechaPrueba = calcularVigencia(fechaOtor, fechaCumpl, 41012558, "hola");
+  /*  public static void main(String[] args) throws SQLException, ParseException {
 
-        Date resultado = calcularVigencia(fechaOtor,fechaCumpl,"40258746","5");
-        System.out.println("fecha devuelta: "+resultado);
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(1999, 12,10);
+        Date fechaCumpl = calendar.getTime();
 
+        Date resultado = calcularVigencia(fechaCumpl,"40258746","5");
+       // System.out.println("fecha devuelta: "+resultado);
 
-      /*  String retornoBD = buscarLicencia("40258746","5");
-        System.out.println(retornoBD);
-
-        //consulta
-        if(retornoBD == "") {
-            System.out.println("true");
-            // return true;
-        }
-        else System.out.println("false");
-            //return false;
-        */
     }
-
+*/
 
     public static String buscarLicencia(String dniTitular, String idTitular) throws SQLException {
         String retornoBD = "";
-        Statement stmt = (new ConectarBD()).getStmt();
+        ConectarBD conexion =new ConectarBD();
+        Statement stmt = conexion.getStmt();
         String SQL = "SELECT * FROM Licencia " +
                 "WHERE (numeroDeLicencia="+"'"+dniTitular+"'"+
                 "AND titular="+idTitular+")";
@@ -100,7 +124,9 @@ public class CalcularVigenciaLicencia {
             retornoBD = rs.getString("numeroDeLicencia")+","+rs.getString("titular");
         }
 
+        conexion.getCon().close();
         return retornoBD;
     }
+
 
 }
