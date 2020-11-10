@@ -15,9 +15,7 @@ public class ConexionDefault {
     private final String PASS="0EE2yqc1RP";
 
     public Connection openConnection() {
-
         Connection connect = null;
-
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
             connect=(Connection) DriverManager.getConnection(URL,USER,PASS);
@@ -31,10 +29,8 @@ public class ConexionDefault {
         }catch(ClassNotFoundException | SQLException ex){
             System.out.println("error "+ex.getMessage());
         }
-
         return connect;
     }
-
 
     public void closeConnection(Connection connect){
         try {

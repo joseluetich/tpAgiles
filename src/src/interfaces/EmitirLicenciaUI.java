@@ -9,7 +9,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
+
+import static logica.EmitirLicencia.buscarTitular;
+import static logica.EmitirLicencia.getIdLicencia;
 
 public class EmitirLicenciaUI {
     boolean validarCampos;
@@ -36,15 +42,26 @@ public class EmitirLicenciaUI {
     private JLabel labelBuscarTitular;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         JFrame frame = new JFrame("Emitir una licencia");
+
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+        }
+
         frame.setContentPane(new EmitirLicenciaUI().panelEmitirLicencia);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
     }
 
-    public EmitirLicenciaUI() {
+    public EmitirLicenciaUI() throws SQLException {
         generacionIDLicencia();
         validacionBuscarTitular();
         inicializarComboTipo();
@@ -53,7 +70,8 @@ public class EmitirLicenciaUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String nroDocIngresado = campoBuscarTitular.getText();
-                String tipoDocIngresado = (String) comboTipo.getSelectedItem();
+                String tipoDocIngresado = null;
+
                 if(nroDocIngresado.equals("") || nroDocIngresado.length()!=8){
                     JOptionPane.showMessageDialog(null, "Ingrese un Nro. de Documento válido");
                 }
@@ -61,7 +79,31 @@ public class EmitirLicenciaUI {
                     JOptionPane.showMessageDialog(null, "Seleccione un tipo de Documento");
                 }
                 else{
-                    seteoCamposTitular(nroDocIngresado, tipoDocIngresado);
+
+                    if(comboTipo.getSelectedItem().toString().equals("DNI")){
+                        tipoDocIngresado = "DNI";
+                    }
+                    else if(comboTipo.getSelectedItem().toString().equals("LC")){
+                        tipoDocIngresado = "LIBRETA_CIVICA";
+                    }
+                    else if(comboTipo.getSelectedItem().toString().equals("LE")){
+                        tipoDocIngresado = "LIBRETA_ENROLAMIENTO";
+                    }
+
+                    String datosTitular = null;
+                    try {
+                        datosTitular = buscarTitular(nroDocIngresado,tipoDocIngresado);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    assert datosTitular != null;
+                    if(datosTitular.equals("")){
+                        JOptionPane.showMessageDialog(null, "No se pudo encontrar el titular");
+                    }
+                    else{
+                        seteoCamposTitular(datosTitular);
+                    }
+
                 }
             }
         }); //Presionar listener Buscar
@@ -120,33 +162,44 @@ public class EmitirLicenciaUI {
         });
     }
 
-    public void seteoCamposTitular(String nroDocIngresado, String tipoDocIngresado){
-        //TitularDao = BuscarTitularEnBD(nroDocIngresado,tipoDocIngresado);
-        if(nroDocIngresado.equals("41043652") && tipoDocIngresado.equals("DNI")){
-            campoTipoDoc.setText("DNI");                    //campoTipoDoc.setText(TitularDao.getNroDocumento())
-            campoNroDoc.setText("41043652");
-            campoNombre.setText("DAVID, FAUSTO");
-            campoCUIL.setText("20-41043652-4");
-            campoFechaNacimiento.setText("07/05/1998");
-            campoDireccion.setText("Sarobe 694");
-            campoFechaOtorgamiento.setText("20/01/2020");
-        }
-        else{
-            campoTipoDoc.setText("");                    //campoTipoDoc.setText(TitularDao.getNroDocumento())
-            campoNroDoc.setText("");
-            campoNombre.setText("");
-            campoCUIL.setText("");
-            campoFechaNacimiento.setText("");
-            campoDireccion.setText("");
-            campoFechaOtorgamiento.setText("");
-        }
+    public void seteoCamposTitular(String datosTitularBD){
+
+            String[] datosSplitteados = datosTitularBD.split(",");
+
+            String nombre = datosSplitteados[0];
+            String apellido = datosSplitteados[1];
+            String cuil = datosSplitteados[2];
+            String direccion = datosSplitteados[3];
+            String fechaNacimiento = datosSplitteados[4];
+            String grupoSanguineo = datosSplitteados[5];
+            String donanteOrganos = datosSplitteados[6];
+            String codigoPostal = datosSplitteados[7];
+
+            campoTipoDoc.setText(comboTipo.getSelectedItem().toString());
+            campoNroDoc.setText(campoBuscarTitular.getText());
+            campoNombre.setText(nombre+" "+apellido);
+            campoCUIL.setText(cuil);
+            campoFechaNacimiento.setText(fechaNacimiento);
+            campoDireccion.setText(direccion+", CP: "+codigoPostal);
+            campoGrupo.setText(grupoSanguineo);
+
+            if(Integer.parseInt(donanteOrganos)==1){
+                donanteDeÓrganosCheckBox.setSelected(true);
+            }
+            else{
+                donanteDeÓrganosCheckBox.setSelected(false);
+            }
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date fechaActual = new Date();
+            String fechaFormateada = sdf.format(fechaActual);
+
+            campoFechaOtorgamiento.setText(fechaFormateada);
 
     }
 
-    public void generacionIDLicencia(){
-        Random rnd = new Random();
-        int IDRandom = 100000 + rnd.nextInt(900000);
-        campoNroLicencia.setText(String.valueOf(IDRandom)); //Se setea el ID autogenerado en la BD
+    public void generacionIDLicencia() throws SQLException {
+        campoNroLicencia.setText(getIdLicencia());
 
     }
 
@@ -174,17 +227,11 @@ public class EmitirLicenciaUI {
             this.limit = limit;
         }
 
-        CampoLimitado(int limit, boolean upper) {
-            super();
-            this.limit = limit;
-        }
-
         public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
             if (str == null)
                 return;
 
             for (int i=0;i<str.length();i++)
-                // si no es digit, volvemos
                 if (!Character.isDigit(str.charAt(i)))
                     return;
 
