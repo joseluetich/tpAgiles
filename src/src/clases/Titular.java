@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Titular {
-
     private Integer idTitular;
     private tipoDeDocumento tipoDoc;
     private String numeroDeDocumento, apellido, nombre, cuil, grupoSanguineo, direccion, codigoPostal;
@@ -20,7 +19,6 @@ public class Titular {
     public void setCreadoPor(Usuario creadoPor) {
         this.creadoPor = creadoPor;
     }
-
 
     public Titular() {
         this.licencias = new ArrayList<Licencia>();
@@ -39,6 +37,14 @@ public class Titular {
         this.fechaDeNacimiento = fechaDeNacimiento;
         this.licencias = licencias;
         this.creadoPor = creadoPor;
+    }
+
+    public Integer getIdTitular() {
+        return idTitular;
+    }
+
+    public void setIdTitular(Integer idTitular) {
+        this.idTitular = idTitular;
     }
 
     public tipoDeDocumento getTipoDoc() {

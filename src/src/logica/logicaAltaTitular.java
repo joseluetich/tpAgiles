@@ -2,62 +2,54 @@ package logica;
 
 import clases.*;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
+
+import bd.darDeAltaTitularBD;
 
 public class logicaAltaTitular {
 
-    public static String validar(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, String clase, Date fechaNac) {
+    public static String validar(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, Date fechaNac) {
         if(tipoDoc.equals("Seleccionar")) {
             return "errorTipoDoc";
         }
-        else if(numeroDoc.length() != 8) {
+        if(numeroDoc.length() != 8) {
             return "errorNumeroDoc";
         }
-        else if(apellido.isEmpty() || apellido.length() > 50) {
+        if(apellido.isEmpty() || apellido.length() > 50) {
             return "errorApellido";
         }
-        else if(nombre.isEmpty() || nombre.length() > 50) {
+        if(nombre.isEmpty() || nombre.length() > 50) {
             return "errorNombre";
         }
-        else if(direccion.isEmpty() || direccion.length() > 100) {
+        if(direccion.isEmpty() || direccion.length() > 100) {
             return "errorDireccion";
         }
-        else if(clase.equals("Seleccionar")) {
-            return "errorClase";
-        }
-        else if(clase.equals("C") || clase.equals("D") || clase.equals("E")) {
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate fechaNuevaNac = fechaNac.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate ahora = LocalDate.now();
-            Period periodo = Period.between(fechaNuevaNac, ahora);
+        LocalDate fechaNuevaNac = fechaNac.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate ahora = LocalDate.now();
+        Period periodo = Period.between(fechaNuevaNac, ahora);
 
-            if(periodo.getYears() < 21) {
-                return "errorEdad21";
-            }
-            if(periodo.getYears() > 65) {
-                return "errorEdad65";
-            }
+        if(periodo.getYears() < 17) {
+            return "errorEdad17";
         }
-        else if(clase.equals("A") || clase.equals("B") || clase.equals("F") || clase.equals("G")) {
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate fechaNuevaNac = fechaNac.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate ahora = LocalDate.now();
-            Period periodo = Period.between(fechaNuevaNac, ahora);
 
-            if(periodo.getYears() < 17) {
-                return "errorEdad17";
-            }
-        }
         return "Validado";
     }
 
-    public static void guardarDatos(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, String clase, String grupoS, Boolean donante, Date fechaNac) {
+    public static void guardarDatos(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, String grupoS, Boolean donante, Date fechaNac) throws SQLException {
         Titular nuevoTitular = new Titular();
-        nuevoTitular.setTipoDoc(tipoDeDocumento.valueOf(tipoDoc.toUpperCase()));
+        if(tipoDoc == "DNI") {
+            nuevoTitular.setTipoDoc(tipoDeDocumento.DNI);
+        }
+        else if(tipoDoc == "Libreta Cívica") {
+            nuevoTitular.setTipoDoc(tipoDeDocumento.LIBRETA_CIVICA);
+        }
+        else if(tipoDoc == "Libreta de Enrolamiento") {
+            nuevoTitular.setTipoDoc(tipoDeDocumento.LIBRETA_ENROLAMIENTO);
+        }
         nuevoTitular.setNumeroDeDocumento(numeroDoc);
         nuevoTitular.setApellido(apellido);
         nuevoTitular.setNombre(nombre);
@@ -65,6 +57,8 @@ public class logicaAltaTitular {
         nuevoTitular.setGrupoSanguineo(grupoS);
         nuevoTitular.setDonante(donante);
         nuevoTitular.setFechaDeNacimiento(fechaNac);
+
+        darDeAltaTitularBD.darDeAltaTitular(nuevoTitular);
     }
 
 }
