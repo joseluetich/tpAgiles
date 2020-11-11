@@ -1,5 +1,7 @@
 package logica;
 
+import clases.*;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -53,8 +55,16 @@ public class logicaAltaTitular {
         return "Validado";
     }
 
-    public static void guardarDatos() {
-
+    public static void guardarDatos(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, String clase, String grupoS, Boolean donante, Date fechaNac) {
+        Titular nuevoTitular = new Titular();
+        nuevoTitular.setTipoDoc(tipoDeDocumento.valueOf(tipoDoc.toUpperCase()));
+        nuevoTitular.setNumeroDeDocumento(numeroDoc);
+        nuevoTitular.setApellido(apellido);
+        nuevoTitular.setNombre(nombre);
+        nuevoTitular.setDireccion(direccion);
+        nuevoTitular.setGrupoSanguineo(grupoS);
+        nuevoTitular.setDonante(donante);
+        nuevoTitular.setFechaDeNacimiento(fechaNac);
     }
 
 }

@@ -11,6 +11,7 @@ public class Titular {
     private Boolean donante;
     private Date fechaDeNacimiento;
     private ArrayList<Licencia> licencias;
+    private Usuario creadoPor;
 
     public Usuario getCreadoPor() {
         return creadoPor;
@@ -20,7 +21,10 @@ public class Titular {
         this.creadoPor = creadoPor;
     }
 
-    private Usuario creadoPor;
+
+    public Titular() {
+        this.licencias = new ArrayList<Licencia>();
+    }
 
     public Titular(tipoDeDocumento tipoDoc, String numeroDeDocumento, String apellido, String nombre, String cuil, String grupoSanguineo, String direccion, String codigoPostal, Boolean donante, Date fechaDeNacimiento, ArrayList<Licencia> licencias, Usuario creadoPor) {
         this.tipoDoc = tipoDoc;

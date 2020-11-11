@@ -49,7 +49,7 @@ public class darDeAltaTitular {
 
                 String validacion = logicaAltaTitular.validar(tipoDeDoc, numeroDoc, apellido, nombre, direccion, clase, fechaNac);
                 if(validacion.equals("Validado")) {
-                    //Guardar datos
+                    logicaAltaTitular.guardarDatos(tipoDeDoc, numeroDoc, apellido, nombre, direccion, clase, grupoS, donante, fechaNac);
                     JOptionPane.showMessageDialog(null, "Operación realizada correctamente");
                 }
                 else if(validacion.equals("errorTipoDoc")) {
