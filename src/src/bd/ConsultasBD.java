@@ -40,6 +40,25 @@ public class ConsultasBD {
         return retornoBD;
     }
 
+    public static void insertClase(int edadMinima, String clase, int idLicencia) throws SQLException {
+        ConectarBD conectar = new ConectarBD();
+        int idClase = getIdClaseBD_int()+1;
+        Statement stmt = conectar.getStmt();
+        String SQLClase = "INSERT INTO " +
+                "Clase(idClase, edadMinima, tipo, idLicencia) " +
+                "VALUES ("+idClase+", "+edadMinima+", "+"'"+clase+"'"+", "+idLicencia+") ";
+        stmt.execute(SQLClase);
+        conectar.getCon().close();
+    }
+
+    public static void updateVigenciaLicenciaTitular(Integer nroLicencia) throws SQLException {
+        ConectarBD conexion = new ConectarBD();
+        Statement stmt = (conexion.getStmt());
+        String SQLUpdate = "UPDATE Licencia SET enVigencia = 0 WHERE numeroDeLicencia = "+nroLicencia+"";
+        stmt.execute(SQLUpdate);
+        conexion.getCon().close();
+    }
+
     public static String getIdLicenciaBD() throws SQLException {
         ConectarBD conectar = new ConectarBD();
         String retornoBD = "";
@@ -56,6 +75,19 @@ public class ConsultasBD {
         return retornoBD;
     }
 
+    public static int getIdClaseBD_int() throws SQLException {
+        int retornoBD = 0;
+        Statement stmt = (new ConectarBD()).getStmt();
+        String SQL = "SELECT * FROM Clase " +
+                "ORDER BY idClase " +
+                "DESC LIMIT 1";
+        ResultSet rs = stmt.executeQuery(SQL);
+        while (rs.next()){
+            retornoBD = rs.getInt("idClase");
+        }
+        return retornoBD;
+    }
+
     public static int getIdLicenciaBD_int() throws SQLException {
         int retornoBD = 0;
         Statement stmt = (new ConectarBD()).getStmt();
@@ -69,16 +101,20 @@ public class ConsultasBD {
         return retornoBD;
     }
 
-    public static void emitirLicenciaBD(Integer numeroDeLicencia, String tipo, String fechaDeModificacion, String fechaDeOtorgamiento, String fechaDeVencimiento, boolean enVigencia, double costo, String observaciones, Integer idTitular) throws SQLException {
+    public static void emitirLicenciaBD(Integer numeroDeLicencia, String tipo, String fechaDeModificacion, String fechaDeOtorgamiento, String fechaDeVencimiento, boolean enVigencia, double costo, String observaciones, Integer idTitular, String clase, int edadMinima) throws SQLException {
         ConectarBD conectar = new ConectarBD();
         int idLicencia = getIdLicenciaBD_int()+1;
         Statement stmt = conectar.getStmt();
-        //Relación licencia con su clase (idLicencia FK en clase) INSERTAR EN CLASE LOS ATRIBUTOS
-        //Relación licencia con el atributo enVigencia (quitar enVigencia de la anterior)
-        String SQL = "INSERT INTO " +
+
+        updateVigenciaLicenciaTitular(numeroDeLicencia);
+
+        String SQLLicencia = "INSERT INTO " +
                 "Licencia(idLicencia, numeroDeLicencia, tipo, fechaDeModificacion, fechaDeOtorgamiento, fechaDeVencimiento, enVigencia, costo, observaciones, titular) " +
                 "VALUES ("+idLicencia+", "+numeroDeLicencia+", "+"'"+tipo+"'"+", "+"'"+fechaDeModificacion+"'"+", "+"'"+fechaDeOtorgamiento+"'"+", "+"'"+fechaDeVencimiento+"'"+", "+enVigencia+", "+costo+", "+"'"+observaciones+"'"+", "+idTitular+ ") ";
-        stmt.execute(SQL);
+        stmt.execute(SQLLicencia);
+
+        insertClase(edadMinima, clase, idLicencia);
+
         conectar.getCon().close();
     }
 
@@ -99,4 +135,5 @@ public class ConsultasBD {
             conectar.getCon().close();
             return retornoBD;
         }
-    }
+
+}

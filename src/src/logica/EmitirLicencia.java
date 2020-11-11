@@ -36,8 +36,8 @@ public class EmitirLicencia {
         return null;
     }
 
-    public static boolean validarEmisionPorClase(String nroDoc, String tipoDoc) throws SQLException {
-        return getClaseByTitular(nroDoc, tipoDoc).contains("B");
+    public static boolean validarEmisionPorClase(String nroDoc, String tipoDoc, String clase) throws SQLException {
+        return getClaseByTitular(nroDoc, tipoDoc).contains(clase);
     }
 
     public static int calcularEdad(String fechaNacimiento){
@@ -49,8 +49,8 @@ public class EmitirLicencia {
         return periodo.getYears();
     }
 
-    public static void emitirLicencia(Integer numeroDeLicencia, String tipo, String fechaDeModificacion, String fechaDeOtorgamiento, String fechaDeVencimiento, boolean enVigencia, double costo, String observaciones, Integer idTitular) throws SQLException {
-        emitirLicenciaBD(numeroDeLicencia,tipo,fechaDeModificacion,fechaDeOtorgamiento,fechaDeVencimiento,enVigencia,costo,observaciones,idTitular);
+    public static void emitirLicencia(Integer numeroDeLicencia, String tipo, String fechaDeModificacion, String fechaDeOtorgamiento, String fechaDeVencimiento, boolean enVigencia, double costo, String observaciones, Integer idTitular, String clase, int edadMinima) throws SQLException {
+        emitirLicenciaBD(numeroDeLicencia,tipo,fechaDeModificacion,fechaDeOtorgamiento,fechaDeVencimiento,enVigencia,costo,observaciones,idTitular, clase, edadMinima);
     }
 
 }

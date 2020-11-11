@@ -1,5 +1,6 @@
 package interfaces;
 
+import clases.Licencia;
 import clases.tipoLicencia;
 
 import javax.swing.*;
@@ -20,7 +21,6 @@ import java.util.Objects;
 import static logica.EmitirLicencia.*;
 
 public class EmitirLicenciaUI {
-    boolean validarCampos;
     private JButton botonCancelar;
     private JButton botonNuevoTitular;
     private JButton botonConfirmar;
@@ -71,8 +71,6 @@ public class EmitirLicenciaUI {
 
         botonBuscar.addActionListener(e -> {
             String nroDocIngresado = campoBuscarTitular.getText();
-            String tipoDocIngresado = null;
-
             if(nroDocIngresado.equals("") || nroDocIngresado.length()!=8){
                 JOptionPane.showMessageDialog(null, "Ingrese un Nro. de Documento válido");
             }
@@ -80,20 +78,9 @@ public class EmitirLicenciaUI {
                 JOptionPane.showMessageDialog(null, "Seleccione un tipo de Documento");
             }
             else{
-
-                if(comboTipo.getSelectedItem().toString().equals("DNI")){
-                    tipoDocIngresado = "DNI";
-                }
-                else if(comboTipo.getSelectedItem().toString().equals("LE")){
-                    tipoDocIngresado = "LIBRETA_ENROLAMIENTO";
-                }
-                else if(comboTipo.getSelectedItem().toString().equals("LC")){
-                    tipoDocIngresado = "LIBRETA_CIVICA";
-                }
-
                 String datosTitular = null;
                 try {
-                    datosTitular = buscarTitular(nroDocIngresado,tipoDocIngresado);
+                    datosTitular = buscarTitular(nroDocIngresado,tipoDocIngresado());
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -104,7 +91,7 @@ public class EmitirLicenciaUI {
                 else{
                     try {
                         seteoCamposTitular(datosTitular);
-                    } catch (ParseException parseException) {
+                    } catch (ParseException | SQLException parseException) {
                         parseException.printStackTrace();
                     }
                 }
@@ -125,107 +112,63 @@ public class EmitirLicenciaUI {
         });
 
         botonConfirmar.addActionListener(e -> {
-            boolean esProf = false;
-            boolean esComun = false;
-            if(validarCampos()) {
-                if (calcularEdad(campoFechaNacimiento.getText()) >= 17) {
-                    try {
-                        String tipoDocIngresado = null;
+            if (validarCampos()) {
+                try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //Formato dd/MM/aaaa
+                        Date fechaOtorgamientoEmision_actual = new Date(); //Obtengo fecha actual
+                        //Date fechaVencimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVencimiento_string); //-> Referencia a HISTORIA 2 calcularVigencia(...);
+                        String fechaOtorgamientoEmision_string = sdf.format(fechaOtorgamientoEmision_actual);  //Parseo y formateo fecha actual a String
+                        //String fechaVencimiento_string = sdf.format(fechaVencimiento_date);
+                        String fechaVencimiento_string = "2025-11-10";
 
-                        if (comboTipo.getSelectedItem().toString().equals("DNI")) {
-                            tipoDocIngresado = "DNI";
-                        } else if (comboTipo.getSelectedItem().toString().equals("LE")) {
-                            tipoDocIngresado = "LIBRETA_ENROLAMIENTO";
-                        } else if (comboTipo.getSelectedItem().toString().equals("LC")) {
-                            tipoDocIngresado = "LIBRETA_CIVICA";
-                        }
+                        double costo = 200.00; // -> Referencia a HISTORIA 3 calcularCosto(...)
 
-                        if (labelTipoClase.getText().equals("Conductor profesional")){
-                            if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado)) {
-                                if (calcularEdad(campoFechaNacimiento.getText()) >= 21 && calcularEdad(campoFechaNacimiento.getText()) <= 65) {
-                                    esProf = true;
-                                    JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
-                                } else {
-                                    esProf = false;
-                                    JOptionPane.showMessageDialog(null, "El titular no cumple con la edad mínima.");
-                                }
-                            } else {
-                                esProf = false;
-                                JOptionPane.showMessageDialog(null, "El titular no tiene una licencia de tipo B anterior.");
-                            }
-                        }
-                        else if(labelTipoClase.getText().equals("Conductor común")){
-                            esComun=true;
-                        }
+                        emitirLicencia(Integer.parseInt(campoNroDoc.getText()),
+                                tipoLicencia(),
+                                fechaOtorgamientoEmision_string,
+                                fechaOtorgamientoEmision_string,
+                                fechaVencimiento_string,
+                                true,
+                                costo,
+                                campoObservaciones.getText(),
+                                getIdTitular(campoNroDoc.getText(), tipoDocIngresado()),
+                                comboClases.getSelectedItem().toString(),
+                                edadMinima());
+                        JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
+                        refrescarPantalla();
+                        generacionIDLicencia();
 
-                            try {
-                                //Falta definir idTitular e idLicencia y su relación con Licencia para ejecutar el INSERT.
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
 
-                                String fechaVencimiento_string = "2025-11-10";
-                                Date fechaVencimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVencimiento_string); //-> Referencia a HISTORIA 2 calcularVigencia(...);
-
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //Formato dd/MM/aaaa
-                                Date fechaOtorgamientoEmision_actual = new Date(); //Obtengo fecha actual
-                                String fechaOtorgamientoEmision_string = sdf.format(fechaOtorgamientoEmision_actual);  //Parseo y formateo fecha actual a String
-
-                                System.out.println(fechaOtorgamientoEmision_string);
-
-                                double costo = 200.00; // -> Referencia a HISTORIA 3 calcularCosto(...)
-                                String tipoLicencia = "";
-
-                                if(esProf){
-                                    tipoLicencia="PROFESIONAL";
-                                }
-                                else if(esComun){
-                                    tipoLicencia="COMUN";
-                                }
-
-                                emitirLicencia(Integer.parseInt(campoNroDoc.getText()),
-                                        tipoLicencia,
-                                        fechaOtorgamientoEmision_string,
-                                        fechaOtorgamientoEmision_string,
-                                        fechaVencimiento_string,
-                                        true,
-                                        costo,
-                                        campoObservaciones.getText(), getIdTitular(campoNroDoc.getText(), tipoDocIngresado));
-
-                            } catch (ParseException parseException) {
-                                parseException.printStackTrace();
-                            }
-
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                    }
-                    JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
-                }
+            }
                 else {
-                    JOptionPane.showMessageDialog(null, "El titular no cumple con la edad mínima.");
-                }
+                JOptionPane.showMessageDialog(null, "Revise los campos. No se pudo emitir la licencia.");
             }
-
-            else{
-                JOptionPane.showMessageDialog(null, "Revise los campos, la licencia no se pudo emitir.");
-            }
-
 });
 
         botonCancelar.addActionListener(e -> {
-            campoBuscarTitular.setText("");
-            comboTipo.setSelectedIndex(-1);
-            comboClases.setSelectedIndex(-1);
-            campoGrupo.setText("");
-            campoObservaciones.setText("");
-            donanteDeOrganosCheckBox.setSelected(false);
-            campoTipoDoc.setText("");
-            campoNroDoc.setText("");
-            campoNombre.setText("");
-            campoCUIL.setText("");
-            campoFechaNacimiento.setText("");
-            campoDireccion.setText("");
-            campoFechaOtorgamiento.setText("");
+            refrescarPantalla();
         });
 
         botonNuevoTitular.addActionListener(e -> JOptionPane.showMessageDialog(null, "Abriendo interfaz de carga de nuevo titular..."));
+    }
+
+    private void refrescarPantalla() {
+        campoBuscarTitular.setText("");
+        comboTipo.setSelectedIndex(-1);
+        comboClases.setSelectedIndex(-1);
+        campoGrupo.setText("");
+        campoObservaciones.setText("");
+        donanteDeOrganosCheckBox.setSelected(false);
+        campoTipoDoc.setText("");
+        campoNroDoc.setText("");
+        campoNombre.setText("");
+        campoCUIL.setText("");
+        campoFechaNacimiento.setText("");
+        campoDireccion.setText("");
+        campoFechaOtorgamiento.setText("");
     }
 
     private boolean validarCampos() {
@@ -234,7 +177,7 @@ public class EmitirLicenciaUI {
         return valido;
     }
 
-    public void seteoCamposTitular(String datosTitularBD) throws ParseException {
+    public void seteoCamposTitular(String datosTitularBD) throws ParseException, SQLException {
 
             String[] datosSplitteados = datosTitularBD.split(",");
 
@@ -262,7 +205,87 @@ public class EmitirLicenciaUI {
             Date fechaActual = new Date(); //Obtengo fecha actual
             campoFechaOtorgamiento.setText(sdf.format(fechaActual));  //Parseo y formateo fecha actual a String
 
+                if (calcularEdad(campoFechaNacimiento.getText()) >= 17 && calcularEdad(campoFechaNacimiento.getText()) <= 21) {
+                    comboClases.removeAllItems();
+                    comboClases.addItem("A");
+                    comboClases.addItem("B");
+                    comboClases.addItem("F");
+                    comboClases.addItem("G");
+                    comboClases.setSelectedItem(null);
+                }
+                else if(calcularEdad(campoFechaNacimiento.getText()) >= 21 && calcularEdad(campoFechaNacimiento.getText()) <= 65){
+                    comboClases.removeAllItems();
+                    if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "B")) {
+                        comboClases.addItem("A");
+                        comboClases.addItem("B");
+                        comboClases.addItem("C");
+                        comboClases.addItem("D");
+                        comboClases.addItem("E");
+                        comboClases.addItem("F");
+                        comboClases.addItem("G");
+                    }
+                    else {
+                        comboClases.addItem("A");
+                        comboClases.addItem("B");
+                        comboClases.addItem("F");
+                        comboClases.addItem("G");
+                    }
+                    comboClases.setSelectedItem(null);
+                }
+                else if(calcularEdad(campoFechaNacimiento.getText()) > 65){
+                    comboClases.removeAllItems();
+                    if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "C")
+                        || validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "D")
+                        || validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "E")){
+                        comboClases.addItem("A");
+                        comboClases.addItem("B");
+                        comboClases.addItem("C");
+                        comboClases.addItem("D");
+                        comboClases.addItem("E");
+                        comboClases.addItem("F");
+                        comboClases.addItem("G");
+                    }
+                    else{
+                        comboClases.addItem("A");
+                        comboClases.addItem("B");
+                        comboClases.addItem("F");
+                        comboClases.addItem("G");
+                    }
+                }
+        }
+
+    public String tipoLicencia(){
+            String tipoLicencia = "";
+
+            if (Objects.requireNonNull(comboClases.getSelectedItem()).toString().equals("A") || comboClases.getSelectedItem().toString().equals("B")) {
+                tipoLicencia = "COMUN";
+            } else if (comboClases.getSelectedItem().toString().equals("C") || comboClases.getSelectedItem().toString().equals("D") || comboClases.getSelectedItem().toString().equals("E") ) {
+                tipoLicencia = "PROFESIONAL";
+            }
+            return tipoLicencia;
+        }
+
+    public int edadMinima(){
+        int edadMinima = 0;
+        if (Objects.requireNonNull(comboClases.getSelectedItem()).toString().equals("A") || comboClases.getSelectedItem().toString().equals("B")) {
+            edadMinima=17;
+        } else if (comboClases.getSelectedItem().toString().equals("C") || comboClases.getSelectedItem().toString().equals("D") || comboClases.getSelectedItem().toString().equals("E") ) {
+            edadMinima=21;
+        }
+        return edadMinima;
     }
+
+    public String tipoDocIngresado(){
+            String tipoDocIngresado = null;
+            if (comboTipo.getSelectedItem().toString().equals("DNI")) {
+                tipoDocIngresado = "DNI";
+            } else if (comboTipo.getSelectedItem().toString().equals("LE")) {
+                tipoDocIngresado = "LIBRETA_ENROLAMIENTO";
+            } else if (comboTipo.getSelectedItem().toString().equals("LC")) {
+                tipoDocIngresado = "LIBRETA_CIVICA";
+            }
+            return tipoDocIngresado;
+        }
 
     public void generacionIDLicencia() throws SQLException {
         campoNroLicencia.setText(getIdLicencia());
@@ -321,9 +344,9 @@ public class EmitirLicenciaUI {
         comboClases.addItem("C");
         comboClases.addItem("D");
         comboClases.addItem("E");
+        comboClases.addItem("F");
         comboClases.addItem("G");
         comboClases.setSelectedItem(null);
-
     }
 
 
