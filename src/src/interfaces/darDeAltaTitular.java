@@ -8,7 +8,6 @@ import java.awt.event.KeyEvent;
 import java.util.Date;
 import com.toedter.calendar.JDateChooser;
 
-import clases.*;
 import logica.*;
 
 public class darDeAltaTitular {
@@ -48,8 +47,37 @@ public class darDeAltaTitular {
                 Boolean donante = siCheckBox.isSelected();
                 Date fechaNac = JDateFechaNac.getDate();
 
-                if(validacionesAltaTitular.validar()) {
+                String validacion = logicaAltaTitular.validar(tipoDeDoc, numeroDoc, apellido, nombre, direccion, clase, fechaNac);
+                if(validacion.equals("Validado")) {
+                    //Guardar datos
                     JOptionPane.showMessageDialog(null, "Operación realizada correctamente");
+                }
+                else if(validacion.equals("errorTipoDoc")) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar al menos una opción de tipo de documento");
+                }
+                else if(validacion.equals("errorNumeroDoc")) {
+                    JOptionPane.showMessageDialog(null, "El numero de documento debe tener una longitud de 8");
+                }
+                else if(validacion.equals("errorApellido")) {
+                    JOptionPane.showMessageDialog(null, "El campo apellido es un campo obligatorio y no debe superar los 50 caracteres");
+                }
+                else if(validacion.equals("errorNombre")) {
+                    JOptionPane.showMessageDialog(null, "El campo nombre es un campo obligatorio y no debe superar los 50 caracteres");
+                }
+                else if(validacion.equals("errorDireccion")) {
+                    JOptionPane.showMessageDialog(null, "El campo direccion es un campo obligatorio y no debe superar los 100 caracteres");
+                }
+                else if(validacion.equals("errorClase")) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar al menos una opción de tipo de clase");
+                }
+                else if(validacion.equals("errorEdad21")) {
+                    JOptionPane.showMessageDialog(null, "El titular debe tener al menos 21 años para seleccionar este tipo de clase");
+                }
+                else if(validacion.equals("errorEdad17")) {
+                    JOptionPane.showMessageDialog(null, "El titular debe tener al menos 17 años para seleccionar este tipo de clase");
+                }
+                else if(validacion.equals("errorEdad65")) {
+                    JOptionPane.showMessageDialog(null, "El titular debe tener menos de 65 años para seleccionar este tipo de clase");
                 }
             }
         });
