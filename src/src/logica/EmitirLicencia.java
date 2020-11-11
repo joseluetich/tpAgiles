@@ -1,6 +1,9 @@
 package logica;
 
-import bd.ConsultasBD;
+import bd.EmitirLicenciaBD;
+import clases.Clase;
+import clases.Licencia;
+import clases.Titular;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -10,26 +13,30 @@ import java.util.Date;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
-import static bd.ConsultasBD.emitirLicenciaBD;
+import static bd.EmitirLicenciaBD.emitirLicenciaBD;
 
 public class EmitirLicencia {
 
     public static String getIdLicencia() throws SQLException {
-        String nroLicenciaBD = ConsultasBD.getIdLicenciaBD();
+        String nroLicenciaBD = EmitirLicenciaBD.getIdLicenciaBD();
         int nroLicencia = Integer.parseInt(nroLicenciaBD)+1;
         return String.format("%06d" , nroLicencia);
     }
 
     public static String buscarTitular(String nroDoc, String tipoDoc) throws SQLException {
-        return ConsultasBD.buscarTitularBD(nroDoc,tipoDoc);
+        return EmitirLicenciaBD.buscarTitularBD(nroDoc,tipoDoc);
+    }
+
+    public static Titular buscarTitularAll(String nroDoc, String tipoDoc) throws SQLException {
+        return EmitirLicenciaBD.buscarTitularAll(nroDoc,tipoDoc);
     }
 
     public static int getIdTitular(String nroDoc, String tipoDoc) throws SQLException{
-        return ConsultasBD.getIdTitularBD(nroDoc,tipoDoc);
+        return EmitirLicenciaBD.getIdTitularBD(nroDoc,tipoDoc);
     }
 
     public static ArrayList<String> getClaseByTitular(String nroDoc, String tipoDoc) throws SQLException{
-        return ConsultasBD.getClaseByTitularBD(nroDoc,tipoDoc);
+        return EmitirLicenciaBD.getClaseByTitularBD(nroDoc,tipoDoc);
     }
 
     public static Date calcularVigencia(Date fechaNac, String nroDoc, String tipDoc){
@@ -49,8 +56,8 @@ public class EmitirLicencia {
         return periodo.getYears();
     }
 
-    public static void emitirLicencia(Integer numeroDeLicencia, String tipo, String fechaDeModificacion, String fechaDeOtorgamiento, String fechaDeVencimiento, boolean enVigencia, double costo, String observaciones, Integer idTitular, String clase, int edadMinima) throws SQLException {
-        emitirLicenciaBD(numeroDeLicencia,tipo,fechaDeModificacion,fechaDeOtorgamiento,fechaDeVencimiento,enVigencia,costo,observaciones,idTitular, clase, edadMinima);
+    public static void emitirLicencia(Licencia lic, Clase cla) throws SQLException {
+        emitirLicenciaBD(lic,cla);
     }
 
 }

@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Licencia {
-    private String idLicencia, observaciones;
+    private int idLicencia;
+    private String observaciones;
     private tipoLicencia tipoLicencia;
     private Integer numeroDeLicencia;
-    private Date fechaDeModificacion, fechaDeOtorgamiento, fechaDeVencimienot;
-    private Boolean enVigencia;
+    private Date fechaDeModificacion, fechaDeOtorgamiento, fechaDeVencimiento;
+    private int enVigencia;
     private Double costo;
     private ArrayList<Clase> clases;
     private ComprobanteDePago comprobanteDePago;
@@ -16,14 +17,18 @@ public class Licencia {
     private Usuario usuario;
     private ArrayList<CopiaLicencia> copias;
 
-    public Licencia(String id, String observaciones, clases.tipoLicencia tipoLicencia, Integer numeroDeLicencia, Integer numeroDuplicado, Date fechaDeModificacion, Date fechaDeOtorgamiento, Date fechaDeVencimienot, Boolean enVigencia, Double costo, ArrayList<Clase> clases, ComprobanteDePago comprobanteDePago, Titular titular, Usuario usuario, ArrayList<CopiaLicencia> copias) {
+    public Licencia(){
+
+    }
+
+    public Licencia(int id, String observaciones, clases.tipoLicencia tipoLicencia, Integer numeroDeLicencia, Integer numeroDuplicado, Date fechaDeModificacion, Date fechaDeOtorgamiento, Date fechaDeVencimienot, int enVigencia, Double costo, ArrayList<Clase> clases, ComprobanteDePago comprobanteDePago, Titular titular, Usuario usuario, ArrayList<CopiaLicencia> copias) {
         this.idLicencia = id;
         this.observaciones = observaciones;
         this.tipoLicencia = tipoLicencia;
         this.numeroDeLicencia = numeroDeLicencia;
         this.fechaDeModificacion = fechaDeModificacion;
         this.fechaDeOtorgamiento = fechaDeOtorgamiento;
-        this.fechaDeVencimienot = fechaDeVencimienot;
+        this.fechaDeVencimiento = fechaDeVencimienot;
         this.enVigencia = enVigencia;
         this.costo = costo;
         this.clases = clases;
@@ -33,11 +38,11 @@ public class Licencia {
         this.copias = copias;
     }
 
-    public String getIdLicencia() {
+    public int getIdLicencia() {
         return idLicencia;
     }
 
-    public void setIdLicencia(String idLicencia) {
+    public void setIdLicencia(int idLicencia) {
         this.idLicencia = idLicencia;
     }
 
@@ -81,19 +86,19 @@ public class Licencia {
         this.fechaDeOtorgamiento = fechaDeOtorgamiento;
     }
 
-    public Date getFechaDeVencimienot() {
-        return fechaDeVencimienot;
+    public Date getFechaDeVencimiento() {
+        return fechaDeVencimiento;
     }
 
-    public void setFechaDeVencimienot(Date fechaDeVencimienot) {
-        this.fechaDeVencimienot = fechaDeVencimienot;
+    public void setFechaDeVencimiento(Date fechaDeVencimienot) {
+        this.fechaDeVencimiento = fechaDeVencimienot;
     }
 
-    public Boolean getEnVigencia() {
+    public int getEnVigencia() {
         return enVigencia;
     }
 
-    public void setEnVigencia(Boolean enVigencia) {
+    public void setEnVigencia(int enVigencia) {
         this.enVigencia = enVigencia;
     }
 

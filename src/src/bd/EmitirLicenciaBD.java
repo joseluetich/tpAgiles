@@ -1,14 +1,15 @@
 package bd;
 
+import clases.*;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static java.sql.JDBCType.NULL;
-
-public class ConsultasBD {
+public class EmitirLicenciaBD {
 
     public static String buscarTitularBD(String nroDoc, String tipoDoc) throws SQLException {
         String retornoBD = "";
@@ -40,14 +41,20 @@ public class ConsultasBD {
         return retornoBD;
     }
 
-    public static void insertClase(int edadMinima, String clase, int idLicencia) throws SQLException {
+    public static void insertClase(Clase cla, int idLicencia) throws SQLException {
         ConectarBD conectar = new ConectarBD();
         int idClase = getIdClaseBD_int()+1;
         Statement stmt = conectar.getStmt();
+
+        int edadMinima = cla.getEdadMinima();
+        tipoClase clase = cla.getTipo();
+        int idLicenciaFK = idLicencia;
+
         String SQLClase = "INSERT INTO " +
                 "Clase(idClase, edadMinima, tipo, idLicencia) " +
-                "VALUES ("+idClase+", "+edadMinima+", "+"'"+clase+"'"+", "+idLicencia+") ";
+                "VALUES ("+idClase+", "+edadMinima+", "+"'"+clase+"'"+", "+idLicenciaFK+") ";
         stmt.execute(SQLClase);
+
         conectar.getCon().close();
     }
 
@@ -64,8 +71,8 @@ public class ConsultasBD {
         String retornoBD = "";
         Statement stmt = conectar.getStmt();
         String SQL = "SELECT * FROM Licencia " +
-                "ORDER BY idLicencia " +
-                "DESC LIMIT 1";
+                    "ORDER BY convert(idLicencia, decimal) " +
+                    "DESC LIMIT 1";
         ResultSet rs = stmt.executeQuery(SQL);
 
         while (rs.next()){
@@ -92,7 +99,7 @@ public class ConsultasBD {
         int retornoBD = 0;
         Statement stmt = (new ConectarBD()).getStmt();
         String SQL = "SELECT * FROM Licencia " +
-                "ORDER BY idLicencia " +
+                "ORDER BY convert(idLicencia, decimal) " +
                 "DESC LIMIT 1";
         ResultSet rs = stmt.executeQuery(SQL);
         while (rs.next()){
@@ -101,19 +108,35 @@ public class ConsultasBD {
         return retornoBD;
     }
 
-    public static void emitirLicenciaBD(Integer numeroDeLicencia, String tipo, String fechaDeModificacion, String fechaDeOtorgamiento, String fechaDeVencimiento, boolean enVigencia, double costo, String observaciones, Integer idTitular, String clase, int edadMinima) throws SQLException {
+    public static void emitirLicenciaBD(Licencia lic, Clase cla) throws SQLException {
         ConectarBD conectar = new ConectarBD();
         int idLicencia = getIdLicenciaBD_int()+1;
         Statement stmt = conectar.getStmt();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Integer numeroDeLicencia = lic.getNumeroDeLicencia();
+        tipoLicencia tipo = lic.getTipoLicencia();
+        Date fechaDeModificacion = lic.getFechaDeModificacion();
+        Date fechaDeOtorgamiento = lic.getFechaDeOtorgamiento();
+        Date fechaDeVencimiento = lic.getFechaDeVencimiento();
+        int enVigencia = lic.getEnVigencia();
+        double costo = lic.getCosto();
+        String observaciones = lic.getObservaciones();
+        Titular titularLic = lic.getTitular();
+        Integer idTitular = titularLic.getIdTitular();
+
+        String fechaDeModificacion_string = sdf.format(fechaDeModificacion);
+        String fechaDeOtorgamiento_string = sdf.format(fechaDeOtorgamiento);
+        String fechaDeVencimiento_string = sdf.format(fechaDeVencimiento);
 
         updateVigenciaLicenciaTitular(numeroDeLicencia);
 
         String SQLLicencia = "INSERT INTO " +
                 "Licencia(idLicencia, numeroDeLicencia, tipo, fechaDeModificacion, fechaDeOtorgamiento, fechaDeVencimiento, enVigencia, costo, observaciones, titular) " +
-                "VALUES ("+idLicencia+", "+numeroDeLicencia+", "+"'"+tipo+"'"+", "+"'"+fechaDeModificacion+"'"+", "+"'"+fechaDeOtorgamiento+"'"+", "+"'"+fechaDeVencimiento+"'"+", "+enVigencia+", "+costo+", "+"'"+observaciones+"'"+", "+idTitular+ ") ";
+                "VALUES ("+idLicencia+", "+numeroDeLicencia+", "+"'"+tipo+"'"+", "+"'"+fechaDeModificacion_string+"'"+", "+"'"+fechaDeOtorgamiento_string+"'"+", "+"'"+fechaDeVencimiento_string+"'"+", "+enVigencia+", "+costo+", "+"'"+observaciones+"'"+", "+idTitular+ ") ";
         stmt.execute(SQLLicencia);
 
-        insertClase(edadMinima, clase, idLicencia);
+        insertClase(cla,idLicencia);
 
         conectar.getCon().close();
     }
@@ -136,4 +159,26 @@ public class ConsultasBD {
             return retornoBD;
         }
 
-}
+    public static Titular buscarTitularAll(String nroDoc, String tipoDoc) throws SQLException {
+        Titular titularBD = new Titular();
+        ConectarBD conexion = new ConectarBD();
+        Statement stmt = (conexion.getStmt());
+        String SQL = "SELECT * FROM Titular " +
+                "WHERE (tipoDeDocumento="+"'"+tipoDoc+"'"+
+                "AND numeroDeDocumento="+nroDoc+")";
+        ResultSet rs = stmt.executeQuery(SQL);
+        while (rs.next()){
+            titularBD.setNombre(rs.getString("nombre"));
+            titularBD.setApellido(rs.getString("apellido"));
+            titularBD.setIdTitular(rs.getInt("idTitular"));
+            titularBD.setDireccion(rs.getString("direccion"));
+            titularBD.setFechaDeNacimiento(rs.getDate("fechaDeNacimiento"));
+            titularBD.setGrupoSanguineo(rs.getString("grupoSanguineo"));
+            titularBD.setDonante(rs.getBoolean("donante"));
+            titularBD.setCodigoPostal(rs.getString("codigoPostal"));
+        }
+        conexion.getCon().close();
+        return titularBD;
+    }
+
+    }

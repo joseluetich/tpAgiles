@@ -1,6 +1,8 @@
 package interfaces;
 
+import clases.Clase;
 import clases.Licencia;
+import clases.tipoClase;
 import clases.tipoLicencia;
 
 import javax.swing.*;
@@ -13,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -69,6 +72,9 @@ public class EmitirLicenciaUI {
         validacionBuscarTitular();
         inicializarComboTipo();
 
+        campoObservaciones.setLineWrap(true);
+        campoObservaciones.setWrapStyleWord(true);
+
         botonBuscar.addActionListener(e -> {
             String nroDocIngresado = campoBuscarTitular.getText();
             if(nroDocIngresado.equals("") || nroDocIngresado.length()!=8){
@@ -114,31 +120,45 @@ public class EmitirLicenciaUI {
         botonConfirmar.addActionListener(e -> {
             if (validarCampos()) {
                 try {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //Formato dd/MM/aaaa
-                        Date fechaOtorgamientoEmision_actual = new Date(); //Obtengo fecha actual
-                        //Date fechaVencimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVencimiento_string); //-> Referencia a HISTORIA 2 calcularVigencia(...);
-                        String fechaOtorgamientoEmision_string = sdf.format(fechaOtorgamientoEmision_actual);  //Parseo y formateo fecha actual a String
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");                                  //Formato dd/MM/aaaa
+                        Date fechaOtorgamientoEmision_actual = new Date();                                                  //Obtengo fecha actual
+                        //Date fechaVencimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVencimiento_string);   //-> Referencia a HISTORIA 2 calcularVigencia(...);
+                        String fechaOtorgamientoEmision_string = sdf.format(fechaOtorgamientoEmision_actual);               //Parseo y formateo fecha actual a String
                         //String fechaVencimiento_string = sdf.format(fechaVencimiento_date);
                         String fechaVencimiento_string = "2025-11-10";
 
                         double costo = 200.00; // -> Referencia a HISTORIA 3 calcularCosto(...)
 
-                        emitirLicencia(Integer.parseInt(campoNroDoc.getText()),
-                                tipoLicencia(),
-                                fechaOtorgamientoEmision_string,
-                                fechaOtorgamientoEmision_string,
-                                fechaVencimiento_string,
-                                true,
-                                costo,
-                                campoObservaciones.getText(),
-                                getIdTitular(campoNroDoc.getText(), tipoDocIngresado()),
-                                comboClases.getSelectedItem().toString(),
-                                edadMinima());
+                        int nroDoc = Integer.parseInt(campoNroDoc.getText());
+                        String tipolicencia = tipoLicencia();
+                        String observaciones =  campoObservaciones.getText();
+                        int idTitular = getIdTitular(campoNroDoc.getText(), tipoDocIngresado());
+                        String claseSolicitada = comboClases.getSelectedItem().toString();
+                        int edadMinimaClase =  edadMinima();
+
+                        Licencia lic = new Licencia();
+                        lic.setNumeroDeLicencia(nroDoc);
+                        lic.setFechaDeModificacion(df.parse(fechaOtorgamientoEmision_string));
+                        lic.setFechaDeOtorgamiento(df.parse(fechaOtorgamientoEmision_string));
+                        lic.setFechaDeVencimiento(df.parse(fechaVencimiento_string));
+                        lic.setEnVigencia(1);
+                        lic.setCosto(costo);
+                        lic.setObservaciones(observaciones);
+                        lic.setTipoLicencia(tipoLicencia.valueOf(tipoLicencia()));
+                        lic.setTitular(buscarTitularAll(campoNroDoc.getText(),tipoDocIngresado()));
+
+                        Clase cla = new Clase();
+                        cla.setEdadMinima(edadMinimaClase);
+                        cla.setLicencia(lic);
+                        cla.setTipo(tipoClase.valueOf(claseSolicitada));
+
+                        emitirLicencia(lic,cla);
                         JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
                         refrescarPantalla();
                         generacionIDLicencia();
 
-            } catch (SQLException throwables) {
+            } catch (SQLException | ParseException throwables) {
                 throwables.printStackTrace();
             }
 
@@ -149,13 +169,17 @@ public class EmitirLicenciaUI {
 });
 
         botonCancelar.addActionListener(e -> {
-            refrescarPantalla();
+            try {
+                refrescarPantalla();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         });
 
         botonNuevoTitular.addActionListener(e -> JOptionPane.showMessageDialog(null, "Abriendo interfaz de carga de nuevo titular..."));
     }
 
-    private void refrescarPantalla() {
+    private void refrescarPantalla() throws SQLException {
         campoBuscarTitular.setText("");
         comboTipo.setSelectedIndex(-1);
         comboClases.setSelectedIndex(-1);
@@ -169,11 +193,12 @@ public class EmitirLicenciaUI {
         campoFechaNacimiento.setText("");
         campoDireccion.setText("");
         campoFechaOtorgamiento.setText("");
+        generacionIDLicencia();
     }
 
     private boolean validarCampos() {
         boolean valido;
-        valido= !campoNombre.getText().isEmpty() && !campoDireccion.getText().isEmpty() && !campoCUIL.getText().isEmpty() && !campoNroDoc.getText().isEmpty() && !campoGrupo.getText().isEmpty() && !campoFechaOtorgamiento.getText().isEmpty() && !campoFechaNacimiento.getText().isEmpty() && !campoTipoDoc.getText().isEmpty() && comboClases.getSelectedIndex() != -1;
+        valido = !campoNombre.getText().isEmpty() && !campoDireccion.getText().isEmpty() && !campoCUIL.getText().isEmpty() && !campoNroDoc.getText().isEmpty() && !campoGrupo.getText().isEmpty() && !campoFechaOtorgamiento.getText().isEmpty() && !campoFechaNacimiento.getText().isEmpty() && !campoTipoDoc.getText().isEmpty() && comboClases.getSelectedIndex() != -1;
         return valido;
     }
 
@@ -256,7 +281,6 @@ public class EmitirLicenciaUI {
 
     public String tipoLicencia(){
             String tipoLicencia = "";
-
             if (Objects.requireNonNull(comboClases.getSelectedItem()).toString().equals("A") || comboClases.getSelectedItem().toString().equals("B")) {
                 tipoLicencia = "COMUN";
             } else if (comboClases.getSelectedItem().toString().equals("C") || comboClases.getSelectedItem().toString().equals("D") || comboClases.getSelectedItem().toString().equals("E") ) {
@@ -348,6 +372,5 @@ public class EmitirLicenciaUI {
         comboClases.addItem("G");
         comboClases.setSelectedItem(null);
     }
-
 
 }
