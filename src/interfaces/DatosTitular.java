@@ -6,6 +6,7 @@ import src.clases.CopiaLicencia;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -22,9 +23,13 @@ public class DatosTitular extends JFrame {
     private JTextField documentoTextField;
     private JButton modificarDatosButton;
     private JButton siguienteButton;
+    private JButton atrásButton;
     private CopiaLicencia copiaLicencia;
+    private static DatosTitular datosTitular;
 
-    public DatosTitular(String DatosTitular, String tipoDoc, String numDoc, String claseSolicitada) {
+    public DatosTitular(JFrame frameQueLoEjecuta, String DatosTitular, String tipoDoc, String numDoc, String claseSolicitada) {
+
+        datosTitular = this;
         add(datosTitularPanel);
         setTitle("Datos del Titular");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,18 +41,24 @@ public class DatosTitular extends JFrame {
         siguienteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MotivoEmision motivoEmision = new MotivoEmision(numDoc,claseSolicitada);
-                motivoEmision.setVisible(true);
+                MotivoEmision motivoEmision = null;
+                try {
+                    motivoEmision = new MotivoEmision(datosTitular, numDoc,claseSolicitada);
+                    motivoEmision.show();
+                    datosTitular.hide();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
             }
         });
-    }
 
-    public static void main (String [] args) throws SQLException {
-        BusquedaTitular busquedaTitular = new BusquedaTitular();
-        busquedaTitular.setVisible(true);
-
-        ConexionDefault conectar = new ConexionDefault();
-        Connection con = conectar.openConnection();
+        atrásButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                datosTitular.hide();
+                frameQueLoEjecuta.show();
+            }
+        });
     }
 
     public void seteoCamposTitular(String datosTitularBD, String tipoDoc, String numDoc, String claseSolicitada){

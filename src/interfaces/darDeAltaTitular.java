@@ -55,10 +55,10 @@ public class darDeAltaTitular extends JFrame{
                 Boolean donante = siCheckBox.isSelected();
                 Date fechaNac = JDateFechaNac.getDate();
 
-                String validacion = logicaAltaTitular.validar(tipoDeDoc, numeroDoc, apellido, nombre, direccion, fechaNac);
+                String validacion = AltaTitular.validar(tipoDeDoc, numeroDoc, apellido, nombre, direccion, fechaNac);
                 if(validacion.equals("Validado")) {
                     try {
-                        logicaAltaTitular.guardarDatos(tipoDeDoc, numeroDoc, apellido, nombre, direccion, grupoS, donante, fechaNac);
+                        AltaTitular.guardarDatos(tipoDeDoc, numeroDoc, apellido, nombre, direccion, grupoS, donante, fechaNac);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

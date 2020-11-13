@@ -8,7 +8,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class calcularCosto {
+public class CalcularCosto {
 
 public static double calcularCostoLicencia (Licencia lic, Date fechaVigencia){
 

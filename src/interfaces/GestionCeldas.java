@@ -4,10 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
 // Esta clase permite gestionar la tabla y los eventos realizados sobre ella
@@ -48,13 +45,17 @@ public class GestionCeldas extends DefaultTableCellRenderer{
         Color colorFondoSeleccion=new Color( 140, 140 , 140);
 
 
+        //table.setRowSelectionAllowed(false);
+        //table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        int cantFilasSeleccionadas = table.getSelectedRowCount();
+
          //Si la celda del evento es la seleccionada se asigna el fondo por defecto para la selección
 
         if (selected) {
-            this.setBackground(colorFondoPorDefecto );
+            this.setBackground(colorFondoPorDefecto);
         }
-        else
-        {
+        else {
             //Para las que no están seleccionadas se pinta el fondo de las celdas de blanco
             this.setBackground(Color.white);
         }

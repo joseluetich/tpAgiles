@@ -8,9 +8,9 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 
-import src.bd.darDeAltaTitularBD;
+import src.bd.DarDeAltaTitularBD;
 
-public class logicaAltaTitular {
+public class AltaTitular {
 
     public static String validar(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, Date fechaNac) {
         if(tipoDoc.equals("Seleccionar")) {
@@ -58,7 +58,7 @@ public class logicaAltaTitular {
         nuevoTitular.setDonante(donante);
         nuevoTitular.setFechaDeNacimiento(fechaNac);
 
-        darDeAltaTitularBD.darDeAltaTitular(nuevoTitular);
+        DarDeAltaTitularBD.darDeAltaTitular(nuevoTitular);
     }
 
 }

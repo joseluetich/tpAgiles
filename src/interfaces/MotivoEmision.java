@@ -7,6 +7,7 @@ import src.clases.motivosCopia;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,8 +20,12 @@ public class MotivoEmision extends JFrame {
     private JButton emitirCopiaButton;
     private JButton atrásButton;
     private CopiaLicencia copiaLicencia = new CopiaLicencia();
+    MotivoEmision motivoEmision;
+    MenuPrincipalUI menuPrincipalUI = new MenuPrincipalUI();
 
-    public MotivoEmision(String numDoc, String claseSolicitada) {
+    public MotivoEmision(JFrame frameQueLoEjecuta, String numDoc, String claseSolicitada) throws IOException {
+
+        motivoEmision = this;
         add(motivoEmisionPanel);
         setTitle("Motivos de Emisión");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,19 +33,42 @@ public class MotivoEmision extends JFrame {
         setSize(550, 350);
         extravíoRadioButton.setSelected(true);
 
-        if(extravíoRadioButton.isSelected()){
-            roboRadioButton.setSelected(false);
-            deterioroRadioButton.setSelected(false);
-        }
-        if(roboRadioButton.isSelected()){
-            extravíoRadioButton.setSelected(false);
-            deterioroRadioButton.setSelected(false);
-        }
-        if(deterioroRadioButton.isSelected()){
-            extravíoRadioButton.setSelected(false);
-            roboRadioButton.setSelected(false);
-        }
+        extravíoRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(extravíoRadioButton.isSelected()){
+                    roboRadioButton.setSelected(false);
+                    deterioroRadioButton.setSelected(false);
+                }
+            }
+        });
+        roboRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(roboRadioButton.isSelected()){
+                    extravíoRadioButton.setSelected(false);
+                    deterioroRadioButton.setSelected(false);
+                }
+            }
+        });
+        deterioroRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(deterioroRadioButton.isSelected()){
+                    extravíoRadioButton.setSelected(false);
+                    roboRadioButton.setSelected(false);
+                }
+            }
+        });
 
+
+        atrásButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                motivoEmision.hide();
+                frameQueLoEjecuta.show();
+            }
+        });
 
         emitirCopiaButton.addActionListener(new ActionListener() {
             @Override
@@ -82,6 +110,8 @@ public class MotivoEmision extends JFrame {
                     }
                     EmitirCopiaDB.insertCopiaLicencia(copiaLicencia, String.valueOf(idLicencia), fechaEmision);
                     JOptionPane.showMessageDialog(null, "Se ha creado la copia con éxito");
+                    motivoEmision.hide();
+                    menuPrincipalUI.show();
 
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();

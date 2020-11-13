@@ -70,7 +70,13 @@ public class MenuPrincipalUI  extends JFrame {
         emitirCopiaLicenciaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //EmitirCopiaUI emitirCopiaUI = new EmitirCopiaUI(menuPrincipalUI);
+                try {
+                    BusquedaTitular busquedaTitular = new BusquedaTitular(menuPrincipalUI);
+                    busquedaTitular.show();
+                    menuPrincipalUI.hide();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
     }

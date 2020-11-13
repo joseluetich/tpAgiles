@@ -28,8 +28,9 @@ public class BusquedaTitular extends JFrame implements MouseListener{
     ModeloTabla modelo;
     private int filasTabla = 0;
     private int columnasTabla;
+    private static BusquedaTitular busquedaTitular;
 
-    public BusquedaTitular() throws SQLException {
+    public BusquedaTitular(JFrame frameQueLoEjecuta) throws SQLException {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -41,6 +42,7 @@ public class BusquedaTitular extends JFrame implements MouseListener{
             // If Nimbus is not available, you can set the GUI to another look and feel.
         }
 
+        busquedaTitular = this;
         add(buscarTitularPanel);
         setTitle("Busqueda Titular");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,7 +50,6 @@ public class BusquedaTitular extends JFrame implements MouseListener{
         iniciarComponentes();
         setLocationRelativeTo(null);
         construirTabla();
-        atrásButton.setVisible(false);
 
         buscarButton.addActionListener(new ActionListener() {
             @Override
@@ -63,7 +64,6 @@ public class BusquedaTitular extends JFrame implements MouseListener{
                 if(!tipoDoc.equals("Seleccionar") && !num_doc.isEmpty()) {
                     try {
                         buscarTitular(tipoDoc, num_doc);
-                        atrásButton.setVisible(true);
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -77,44 +77,40 @@ public class BusquedaTitular extends JFrame implements MouseListener{
         seleccionarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String tipoDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),2).toString();
-                String numDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),3).toString();
-                String claseSolicitada = modelo.getValueAt(licenciasTable.getSelectedRow(),5).toString();
 
-                String datosTitularBD = "";
-                try {
-                    datosTitularBD = buscarTitularBD(numDoc,tipoDoc);
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
+                if(licenciasTable.getSelectedRowCount()>1) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar un solo titular");
                 }
-                assert datosTitularBD != null;
+                else if(licenciasTable.getSelectedRowCount()==0){
+                    JOptionPane.showMessageDialog(null, "Seleccione un titular");
+                }
+                else {
+                    String tipoDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),2).toString();
+                    String numDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),3).toString();
+                    String claseSolicitada = modelo.getValueAt(licenciasTable.getSelectedRow(),5).toString();
+                    String datosTitularBD = "";
+                    try {
+                        datosTitularBD = buscarTitularBD(numDoc,tipoDoc);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    assert datosTitularBD != null;
 
-                DatosTitular datosTitular = new DatosTitular(datosTitularBD, tipoDoc, numDoc, claseSolicitada);
-                datosTitular.setVisible(true);
+                    DatosTitular datosTitular = new DatosTitular(busquedaTitular, datosTitularBD, tipoDoc, numDoc, claseSolicitada);
+                    datosTitular.show();
+                    busquedaTitular.hide();
+                }
             }
         });
 
         atrásButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    construirTabla();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-                atrásButton.setVisible(false);
+                busquedaTitular.hide();
+                frameQueLoEjecuta.show();
             }
         });
 
-    }
-
-    public static void main (String [] args)throws SQLException{
-
-        BusquedaTitular busquedaTitular = new BusquedaTitular();
-        busquedaTitular.setVisible(true);
-
-        ConexionDefault conectar = new ConexionDefault();
-        Connection con = conectar.openConnection();
     }
 
     private void iniciarComponentes() {

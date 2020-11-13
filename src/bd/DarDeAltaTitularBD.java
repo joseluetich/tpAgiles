@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-public class darDeAltaTitularBD {
+public class DarDeAltaTitularBD {
 
     public static void darDeAltaTitular(Titular titular) throws SQLException {
         ConectarBD conectar = new ConectarBD();
