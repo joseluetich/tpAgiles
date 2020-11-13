@@ -87,13 +87,21 @@ public class CalcularVigenciaLicencia {
             Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
             return fechaOtorgDate;
         }
-        //entre 60 y 70 => licencia por 1 año
+        //entre 60 y 70 => licencia por 3 año
         if(anios>=60 && anios<70){
+            fechaOtorgamiento=fechaOtorgamiento.plusYears(3);
+            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
+            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
+            return fechaOtorgDate;
+        }
+        //mayor a 70 => licencia por 3 año
+        if(anios>70){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(1);
             System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
             Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
             return fechaOtorgDate;
         }
+
 
         return fechaCumpleanios; //hubo un error
     }
