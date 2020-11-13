@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Titular {
-
     private Integer idTitular;
     private tipoDeDocumento tipoDoc;
     private String numeroDeDocumento, apellido, nombre, cuil, grupoSanguineo, direccion, codigoPostal;
     private Boolean donante;
     private Date fechaDeNacimiento;
     private ArrayList<Licencia> licencias;
+    private Usuario creadoPor;
 
     public Integer getIdTitular() {
         return idTitular;
@@ -28,7 +28,9 @@ public class Titular {
         this.creadoPor = creadoPor;
     }
 
-    private Usuario creadoPor;
+    public Titular() {
+        this.licencias = new ArrayList<Licencia>();
+    }
 
     public Titular() {
 
@@ -48,6 +50,14 @@ public class Titular {
         this.fechaDeNacimiento = fechaDeNacimiento;
         this.licencias = licencias;
         this.creadoPor = creadoPor;
+    }
+
+    public Integer getIdTitular() {
+        return idTitular;
+    }
+
+    public void setIdTitular(Integer idTitular) {
+        this.idTitular = idTitular;
     }
 
     public tipoDeDocumento getTipoDoc() {
