@@ -10,6 +10,8 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
@@ -44,27 +46,18 @@ public class EmitirLicenciaUI extends JFrame{
     private JComboBox<String> comboTipo;
     private JPanel panelEmitirLicencia;
     private JLabel labelBuscarTitular;
+    private JButton AtrasButton;
+    private static EmitirLicenciaUI emitirLicenciaUI;
 
-    public EmitirLicenciaUI() throws SQLException {
+    public EmitirLicenciaUI(MenuPrincipalUI menuPrincipalUI) throws SQLException {
 
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            ///
-        }
-
+        emitirLicenciaUI = this;
         add(panelEmitirLicencia);
         setTitle("Emitir Licencia");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000,500);
-        pack();
+        setLocationRelativeTo(null);
         setResizable(false);
-        setVisible(true);
 
         generacionIDLicencia();
         validacionBuscarTitular();
@@ -119,12 +112,12 @@ public class EmitirLicenciaUI extends JFrame{
             if (validarCampos()) {
                 try {
                         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");                                  //Formato dd/MM/aaaa
-                        Date fechaOtorgamientoEmision_actual = new Date();                                                  //Obtengo fecha actual
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        Date fechaOtorgamientoEmision_actual = new Date();
+                        //Date fechaVencimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(calcularVigenciaLicencia(nroDoc, getIdLicencia(), fechaNacimiento, fechaOtorgamientoEmision_actual))
                         //Date fechaVencimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVencimiento_string);   //-> Referencia a HISTORIA 2 calcularVigencia(...);
-                        String fechaOtorgamientoEmision_string = sdf.format(fechaOtorgamientoEmision_actual);               //Parseo y formateo fecha actual a String
-                        //String fechaVencimiento_string = sdf.format(fechaVencimiento_date);
                         String fechaVencimiento_string = "2025-11-10";
+                        String fechaOtorgamientoEmision_string = sdf.format(fechaOtorgamientoEmision_actual);
 
                         double costo = 200.00; // -> Referencia a HISTORIA 3 calcularCosto(...)
 
@@ -175,6 +168,13 @@ public class EmitirLicenciaUI extends JFrame{
         });
 
         botonNuevoTitular.addActionListener(e -> JOptionPane.showMessageDialog(null, "Abriendo interfaz de carga de nuevo titular..."));
+        AtrasButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                emitirLicenciaUI.hide();
+                menuPrincipalUI.show();
+            }
+        });
     }
 
     private void refrescarPantalla() throws SQLException {
@@ -218,15 +218,15 @@ public class EmitirLicenciaUI extends JFrame{
             campoNombre.setText(nombre+" "+apellido);
             campoCUIL.setText(cuil);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); //Formato dd/MM/aaaa
-            Date fechaNacimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaNacimiento); //Parseo de String a Date
-            campoFechaNacimiento.setText(sdf.format(fechaNacimiento_date)); //Parseo y formateo fecha de nacimiento a String
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date fechaNacimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaNacimiento);
+            campoFechaNacimiento.setText(sdf.format(fechaNacimiento_date));
             campoDireccion.setText(direccion+", CP: "+codigoPostal);
             campoGrupo.setText(grupoSanguineo);
             donanteDeOrganosCheckBox.setSelected(Integer.parseInt(donanteOrganos) == 1);
 
-            Date fechaActual = new Date(); //Obtengo fecha actual
-            campoFechaOtorgamiento.setText(sdf.format(fechaActual));  //Parseo y formateo fecha actual a String
+            Date fechaActual = new Date();
+            campoFechaOtorgamiento.setText(sdf.format(fechaActual));
 
                 if (calcularEdad(campoFechaNacimiento.getText()) >= 17 && calcularEdad(campoFechaNacimiento.getText()) <= 21) {
                     comboClases.removeAllItems();
