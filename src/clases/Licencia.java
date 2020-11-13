@@ -1,4 +1,4 @@
-package clases.*;
+package src.clases;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,11 +46,11 @@ public class Licencia {
         this.idLicencia = idLicencia;
     }
 
-    public clases.tipoLicencia getTipoLicencia() {
+    public tipoLicencia getTipoLicencia() {
         return tipoLicencia;
     }
 
-    public void setTipoLicencia(clases.tipoLicencia tipoLicencia) {
+    public void setTipoLicencia(tipoLicencia tipoLicencia) {
         this.tipoLicencia = tipoLicencia;
     }
 
