@@ -10,8 +10,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
@@ -23,7 +21,8 @@ import java.util.Objects;
 
 import static logica.EmitirLicencia.*;
 
-public class EmitirLicenciaUI {
+public class EmitirLicenciaUI extends JFrame{
+
     private JButton botonCancelar;
     private JButton botonNuevoTitular;
     private JButton botonConfirmar;
@@ -46,9 +45,7 @@ public class EmitirLicenciaUI {
     private JPanel panelEmitirLicencia;
     private JLabel labelBuscarTitular;
 
-
-    public static void main(String[] args) throws SQLException {
-        JFrame frame = new JFrame("Emitir una licencia");
+    public EmitirLicenciaUI() throws SQLException {
 
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -60,14 +57,15 @@ public class EmitirLicenciaUI {
         } catch (Exception e) {
             ///
         }
-        frame.setContentPane(new EmitirLicenciaUI().panelEmitirLicencia);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setResizable(false);
-        frame.setVisible(true);
-    }
 
-    public EmitirLicenciaUI() throws SQLException {
+        add(panelEmitirLicencia);
+        setTitle("Emitir Licencia");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000,500);
+        pack();
+        setResizable(false);
+        setVisible(true);
+
         generacionIDLicencia();
         validacionBuscarTitular();
         inicializarComboTipo();
