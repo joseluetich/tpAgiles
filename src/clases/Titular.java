@@ -12,14 +12,6 @@ public class Titular {
     private ArrayList<Licencia> licencias;
     private Usuario creadoPor;
 
-    public Integer getIdTitular() {
-        return idTitular;
-    }
-
-    public void setIdTitular(Integer idTitular) {
-        this.idTitular = idTitular;
-    }
-
     public Usuario getCreadoPor() {
         return creadoPor;
     }
@@ -30,10 +22,6 @@ public class Titular {
 
     public Titular() {
         this.licencias = new ArrayList<Licencia>();
-    }
-
-    public Titular() {
-
     }
 
     public Titular(Integer idTitular, tipoDeDocumento tipoDoc, String numeroDeDocumento, String apellido, String nombre, String cuil, String grupoSanguineo, String factorSanguineo, String direccion, String codigoPostal, Boolean donante, Date fechaDeNacimiento, ArrayList<Licencia> licencias, Usuario creadoPor) {

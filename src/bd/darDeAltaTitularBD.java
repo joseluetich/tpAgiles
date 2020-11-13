@@ -1,5 +1,5 @@
-package bd;
-import clases.Titular;
+package src.bd;
+import src.clases.Titular;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

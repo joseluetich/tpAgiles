@@ -1,6 +1,6 @@
-package logica;
+package src.logica;
 
-import clases.*;
+import src.clases.*;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -8,7 +8,7 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 
-import bd.darDeAltaTitularBD;
+import src.bd.darDeAltaTitularBD;
 
 public class logicaAltaTitular {
 

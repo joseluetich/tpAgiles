@@ -1,4 +1,4 @@
-package interfaces;
+package src.interfaces;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
