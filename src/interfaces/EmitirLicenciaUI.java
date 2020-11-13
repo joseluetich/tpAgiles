@@ -1,4 +1,4 @@
-package interfaces;
+package src.interfaces;
 
 import clases.Clase;
 import clases.Licencia;
@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
-import static logica.EmitirLicencia.*;
+import static src.logica.EmitirLicencia.*;
 
 public class EmitirLicenciaUI extends JFrame{
 

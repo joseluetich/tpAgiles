@@ -8,7 +8,7 @@ public class Licencia {
     private String observaciones;
     private src.clases.tipoLicencia tipoLicencia;
     private Integer numeroDeLicencia;
-    private Date fechaDeModificacion, fechaDeOtorgamiento, fechaDeVencimienot;
+    private Date fechaDeModificacion, fechaDeOtorgamiento, fechaDeVencimiento;
     private Boolean enVigencia;
     private Double costo;
     private ArrayList<Clase> clases;
@@ -28,7 +28,7 @@ public class Licencia {
         this.numeroDeLicencia = numeroDeLicencia;
         this.fechaDeModificacion = fechaDeModificacion;
         this.fechaDeOtorgamiento = fechaDeOtorgamiento;
-        this.fechaDeVencimienot = fechaDeVencimienot;
+        this.fechaDeVencimiento = fechaDeVencimiento;
         this.enVigencia = enVigencia;
         this.costo = costo;
         this.clases = clases;
@@ -86,12 +86,12 @@ public class Licencia {
         this.fechaDeOtorgamiento = fechaDeOtorgamiento;
     }
 
-    public Date getFechaDeVencimienot() {
-        return fechaDeVencimienot;
+    public Date getFechaDeVencimiento() {
+        return fechaDeVencimiento;
     }
 
-    public void setFechaDeVencimienot(Date fechaDeVencimienot) {
-        this.fechaDeVencimienot = fechaDeVencimienot;
+    public void setFechaDeVencimiento(Date fechaDeVencimiento) {
+        this.fechaDeVencimiento = fechaDeVencimiento;
     }
 
     public Boolean getEnVigencia() {

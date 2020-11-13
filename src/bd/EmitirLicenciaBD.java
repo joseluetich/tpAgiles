@@ -1,6 +1,6 @@
-package bd;
+package src.bd;
 
-import clases.*;
+import src.clases.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,7 +47,7 @@ public class EmitirLicenciaBD {
         Statement stmt = conectar.getStmt();
 
         int edadMinima = cla.getEdadMinima();
-        tipoClase clase = cla.getTipo();
+        String clase = cla.getTipo().toString();
         int idLicenciaFK = idLicencia;
 
         String SQLClase = "INSERT INTO " +
@@ -119,7 +119,7 @@ public class EmitirLicenciaBD {
         Date fechaDeModificacion = lic.getFechaDeModificacion();
         Date fechaDeOtorgamiento = lic.getFechaDeOtorgamiento();
         Date fechaDeVencimiento = lic.getFechaDeVencimiento();
-        int enVigencia = lic.getEnVigencia();
+        String enVigencia = String.valueOf(lic.getEnVigencia());
         double costo = lic.getCosto();
         String observaciones = lic.getObservaciones();
         Titular titularLic = lic.getTitular();
