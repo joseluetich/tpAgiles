@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import com.toedter.calendar.JDateChooser;
 
-import logica.*;
+import src.logica.*;
 
 public class darDeAltaTitular {
     private JPanel panel1;

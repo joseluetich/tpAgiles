@@ -1,6 +1,7 @@
 package src.logica;
 
 import src.clases.*;
+import src.bd.EmitirLicenciaBD;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -9,30 +10,30 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static bd.EmitirLicenciaBD.emitirLicenciaBD;
+import static src.bd.EmitirLicenciaBD.emitirLicenciaBD;
 
 public class EmitirLicencia {
 
     public static String getIdLicencia() throws SQLException {
-        String nroLicenciaBD = bd.EmitirLicenciaBD.getIdLicenciaBD();
+        String nroLicenciaBD = EmitirLicenciaBD.getIdLicenciaBD();
         int nroLicencia = Integer.parseInt(nroLicenciaBD)+1;
         return String.format("%06d" , nroLicencia);
     }
 
     public static String buscarTitular(String nroDoc, String tipoDoc) throws SQLException {
-        return bd.EmitirLicenciaBD.buscarTitularBD(nroDoc,tipoDoc);
+        return EmitirLicenciaBD.buscarTitularBD(nroDoc,tipoDoc);
     }
 
     public static Titular buscarTitularAll(String nroDoc, String tipoDoc) throws SQLException {
-        return bd.EmitirLicenciaBD.buscarTitularAll(nroDoc,tipoDoc);
+        return EmitirLicenciaBD.buscarTitularAll(nroDoc,tipoDoc);
     }
 
     public static int getIdTitular(String nroDoc, String tipoDoc) throws SQLException{
-        return bd.EmitirLicenciaBD.getIdTitularBD(nroDoc,tipoDoc);
+        return EmitirLicenciaBD.getIdTitularBD(nroDoc,tipoDoc);
     }
 
     public static ArrayList<String> getClaseByTitular(String nroDoc, String tipoDoc) throws SQLException{
-        return bd.EmitirLicenciaBD.getClaseByTitularBD(nroDoc,tipoDoc);
+        return EmitirLicenciaBD.getClaseByTitularBD(nroDoc,tipoDoc);
     }
 
     public static Date calcularVigencia(Date fechaNac, String nroDoc, String tipDoc){

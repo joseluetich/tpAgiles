@@ -1,9 +1,6 @@
 package src.interfaces;
 
-import clases.Clase;
-import clases.Licencia;
-import clases.tipoClase;
-import clases.tipoLicencia;
+import src.clases.*;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -133,7 +130,7 @@ public class EmitirLicenciaUI extends JFrame{
                         lic.setFechaDeModificacion(df.parse(fechaOtorgamientoEmision_string));
                         lic.setFechaDeOtorgamiento(df.parse(fechaOtorgamientoEmision_string));
                         lic.setFechaDeVencimiento(df.parse(fechaVencimiento_string));
-                        lic.setEnVigencia(1);
+                        lic.setEnVigencia(true);
                         lic.setCosto(costo);
                         lic.setObservaciones(observaciones);
                         lic.setTipoLicencia(tipoLicencia.valueOf(tipoLicencia()));
@@ -142,7 +139,7 @@ public class EmitirLicenciaUI extends JFrame{
                         Clase cla = new Clase();
                         cla.setEdadMinima(edadMinimaClase);
                         cla.setLicencia(lic);
-                        cla.setTipo(tipoClase.valueOf(claseSolicitada));
+                        cla.setTipo(tipoClase.valueOf(claseSolicitada).toString());
 
                         emitirLicencia(lic,cla);
                         JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");

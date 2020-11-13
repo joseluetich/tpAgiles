@@ -96,7 +96,7 @@
               <focusable value="false"/>
               <horizontalAlignment value="0"/>
               <horizontalTextPosition value="0"/>
-              <icon value="interfaces/resources/logo-muni-santafe.png"/>
+              <icon value="src/interfaces/resources/muni-santafe-icon.png"/>
               <opaque value="true"/>
               <text value=""/>
             </properties>

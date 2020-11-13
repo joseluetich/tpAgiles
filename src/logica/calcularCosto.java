@@ -1,7 +1,6 @@
 package src.logica;
 
-import clases.*;
-import clases.Licencia;
+import src.clases.*;
 
 import java.time.LocalDate;
 import java.time.Period;

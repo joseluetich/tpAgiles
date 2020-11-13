@@ -1,6 +1,7 @@
 package src.logica;
 
-import clases.tipoDeDocumento;
+import src.bd.ConectarBD;
+import src.clases.tipoDeDocumento;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
