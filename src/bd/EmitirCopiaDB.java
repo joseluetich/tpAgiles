@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class ConsultasBD{
+public class EmitirCopiaDB {
 
     public static String buscarTitularBD(String nroDoc, String tipoDoc) throws SQLException {
         String retornoBD = "";
@@ -21,21 +21,6 @@ public class ConsultasBD{
             retornoBD = rs.getString("nombre")+","+rs.getString("apellido")+","+rs.getString("cuil")+","+rs.getString("direccion")+","+rs.getString("fechaDeNacimiento")+","+rs.getString("grupoSanguineo")+","+rs.getString("donante")+","+rs.getString("codigoPostal");
         }
 
-        conectar.getCon().close();
-        return retornoBD;
-    }
-
-    public static String getIdLicenciaBD() throws SQLException {
-        String retornoBD = "";
-        ConectarBD conectar = new ConectarBD();
-        Statement stmt = conectar.getStmt();
-        String SQL = "SELECT * FROM Licencia " +
-                "ORDER BY idLicencia " +
-                "DESC LIMIT 1";
-        ResultSet rs = stmt.executeQuery(SQL);
-        while (rs.next()){
-            retornoBD = rs.getString("idLicencia");
-        }
         conectar.getCon().close();
         return retornoBD;
     }

@@ -5,9 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.*;
 import javax.swing.table.JTableHeader;
-import javax.swing.JLabel;
 import java.awt.event.*;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,7 +13,7 @@ import java.util.ArrayList;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import static src.bd.ConsultasBD.*;
+import static src.bd.EmitirCopiaDB.*;
 
 public class BusquedaTitular extends JFrame implements MouseListener{
     private JPanel buscarTitularPanel;
@@ -30,7 +28,6 @@ public class BusquedaTitular extends JFrame implements MouseListener{
     ModeloTabla modelo;
     private int filasTabla = 0;
     private int columnasTabla;
-
 
     public BusquedaTitular() throws SQLException {
         try {
@@ -83,7 +80,6 @@ public class BusquedaTitular extends JFrame implements MouseListener{
                 String tipoDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),2).toString();
                 String numDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),3).toString();
                 String claseSolicitada = modelo.getValueAt(licenciasTable.getSelectedRow(),5).toString();
-                String idLicencia = modelo.getValueAt(licenciasTable.getSelectedRow(), 4).toString();
 
                 String datosTitularBD = "";
                 try {

@@ -1,7 +1,6 @@
 package src.interfaces;
 
 import src.bd.ConexionDefault;
-import src.bd.ConsultasBD;
 import src.clases.CopiaLicencia;
 
 import javax.swing.*;
@@ -9,8 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import static src.bd.ConsultasBD.getLicenciasVigentes;
 
 public class DatosTitular extends JFrame {
 
@@ -35,19 +32,6 @@ public class DatosTitular extends JFrame {
         setSize(550, 350);
 
         seteoCamposTitular(DatosTitular, tipoDoc, numDoc, claseSolicitada);
-
-        /*try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            // If Nimbus is not available, you can set the GUI to another look and feel.
-        }*/
-
-
 
         siguienteButton.addActionListener(new ActionListener() {
             @Override
@@ -87,7 +71,6 @@ public class DatosTitular extends JFrame {
         grupoSanguineoTextField.setText(grupoSanguineo);
         donanteTextField.setText(donanteOrganos);
         documentoTextField.setText(numDoc);
-
 
     }
 

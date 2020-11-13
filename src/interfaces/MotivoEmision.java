@@ -1,8 +1,7 @@
 package src.interfaces;
 
-import src.bd.ConsultasBD;
+import src.bd.EmitirCopiaDB;
 import src.clases.CopiaLicencia;
-import src.clases.Licencia;
 import src.clases.motivosCopia;
 
 import javax.swing.*;
@@ -10,8 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Date;
 
 public class MotivoEmision extends JFrame {
@@ -50,13 +47,12 @@ public class MotivoEmision extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 Integer idLicencia = null;
                 try {
-                    idLicencia = Integer.parseInt(ConsultasBD.getIdLicencia(numDoc,claseSolicitada));
+                    idLicencia = Integer.parseInt(EmitirCopiaDB.getIdLicencia(numDoc,claseSolicitada));
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
 
                // copiaLicencia.setIdCopiaLicencia(idLicencia);
-
 
                 Date fechaActual = new Date(); //Obtengo fecha actual
                 copiaLicencia.setFechaDeEmision(fechaActual);
@@ -75,8 +71,8 @@ public class MotivoEmision extends JFrame {
                 }
 
                 try {
-                    copiaLicencia.setNumeroDeCopia(1+Integer.parseInt(ConsultasBD.getNumCopiasDeLicencia(String.valueOf(idLicencia))));
-                    String idCopiaLicencia =ConsultasBD.getIdCopiaLicenciaBD();
+                    copiaLicencia.setNumeroDeCopia(1+Integer.parseInt(EmitirCopiaDB.getNumCopiasDeLicencia(String.valueOf(idLicencia))));
+                    String idCopiaLicencia = EmitirCopiaDB.getIdCopiaLicenciaBD();
 
                     if(idCopiaLicencia.equals("")){
                         copiaLicencia.setIdCopiaLicencia(1);
@@ -84,7 +80,7 @@ public class MotivoEmision extends JFrame {
                     else {
                         copiaLicencia.setIdCopiaLicencia(1+Integer.parseInt(idCopiaLicencia));
                     }
-                    ConsultasBD.insertCopiaLicencia(copiaLicencia, String.valueOf(idLicencia), fechaEmision);
+                    EmitirCopiaDB.insertCopiaLicencia(copiaLicencia, String.valueOf(idLicencia), fechaEmision);
                     JOptionPane.showMessageDialog(null, "Se ha creado la copia con éxito");
 
                 } catch (SQLException throwables) {
