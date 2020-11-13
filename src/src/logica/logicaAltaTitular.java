@@ -12,12 +12,15 @@ import bd.darDeAltaTitularBD;
 
 public class logicaAltaTitular {
 
-    public static String validar(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, Date fechaNac) {
+    public static String validar(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, Date fechaNac, String numeroCuil, String codPos) {
         if(tipoDoc.equals("Seleccionar")) {
             return "errorTipoDoc";
         }
         if(numeroDoc.length() != 8) {
             return "errorNumeroDoc";
+        }
+        if(numeroCuil.length() != 11) {
+            return "errorNumeroCuil";
         }
         if(apellido.isEmpty() || apellido.length() > 50) {
             return "errorApellido";
@@ -27,6 +30,9 @@ public class logicaAltaTitular {
         }
         if(direccion.isEmpty() || direccion.length() > 100) {
             return "errorDireccion";
+        }
+        if(codPos.isEmpty() || codPos.length() > 10) {
+            return "errorCodPostal";
         }
         LocalDate fechaNuevaNac = fechaNac.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate ahora = LocalDate.now();
@@ -39,7 +45,7 @@ public class logicaAltaTitular {
         return "Validado";
     }
 
-    public static void guardarDatos(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, String grupoS, Boolean donante, Date fechaNac) throws SQLException {
+    public static void guardarDatos(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, String grupoS, Boolean donante, Date fechaNac, String numeroCuil, String codPos) throws SQLException {
         Titular nuevoTitular = new Titular();
         if(tipoDoc == "DNI") {
             nuevoTitular.setTipoDoc(tipoDeDocumento.DNI);
@@ -57,7 +63,8 @@ public class logicaAltaTitular {
         nuevoTitular.setGrupoSanguineo(grupoS);
         nuevoTitular.setDonante(donante);
         nuevoTitular.setFechaDeNacimiento(fechaNac);
-
+        nuevoTitular.setCuil(numeroCuil);
+        nuevoTitular.setCodigoPostal(codPos);
         darDeAltaTitularBD.darDeAltaTitular(nuevoTitular);
     }
 

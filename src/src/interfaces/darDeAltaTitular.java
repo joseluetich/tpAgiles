@@ -23,6 +23,9 @@ public class darDeAltaTitular {
     private JCheckBox siCheckBox;
     private JButton confirmarButton;
     private JDateChooser JDateFechaNac;
+    private JButton cancelarButton1;
+    private JTextField textFieldCuil;
+    private JTextField textFieldCP;
 
 
     public darDeAltaTitular() {
@@ -45,11 +48,13 @@ public class darDeAltaTitular {
                 String grupoS = comboBoxGrupoS.getSelectedItem().toString();
                 Boolean donante = siCheckBox.isSelected();
                 Date fechaNac = JDateFechaNac.getDate();
+                String cuil = textFieldCuil.getText().toString();
+                String codPos = textFieldCP.getText().toString();
 
-                String validacion = logicaAltaTitular.validar(tipoDeDoc, numeroDoc, apellido, nombre, direccion, fechaNac);
+                String validacion = logicaAltaTitular.validar(tipoDeDoc, numeroDoc, apellido, nombre, direccion, fechaNac, cuil, codPos);
                 if(validacion.equals("Validado")) {
                     try {
-                        logicaAltaTitular.guardarDatos(tipoDeDoc, numeroDoc, apellido, nombre, direccion, grupoS, donante, fechaNac);
+                        logicaAltaTitular.guardarDatos(tipoDeDoc, numeroDoc, apellido, nombre, direccion, grupoS, donante, fechaNac, cuil, codPos);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -61,6 +66,9 @@ public class darDeAltaTitular {
                 else if(validacion.equals("errorNumeroDoc")) {
                     JOptionPane.showMessageDialog(null, "El numero de documento debe tener una longitud de 8");
                 }
+                else if(validacion.equals("errorNumeroCuil")) {
+                    JOptionPane.showMessageDialog(null, "El numero de Cuil debe tener una longitud de 11 y no incluir guiones");
+                }
                 else if(validacion.equals("errorApellido")) {
                     JOptionPane.showMessageDialog(null, "El campo apellido es un campo obligatorio y no debe superar los 50 caracteres");
                 }
@@ -69,6 +77,9 @@ public class darDeAltaTitular {
                 }
                 else if(validacion.equals("errorDireccion")) {
                     JOptionPane.showMessageDialog(null, "El campo direccion es un campo obligatorio y no debe superar los 100 caracteres");
+                }
+                else if(validacion.equals("errorCodPostal")) {
+                    JOptionPane.showMessageDialog(null, "El campo codigo postal es un campo obligatorio y no debe superar los 10 caracteres");
                 }
                 else if(validacion.equals("errorEdad17")) {
                     JOptionPane.showMessageDialog(null, "El titular debe tener al menos 17 años para seleccionar este tipo de clase");
@@ -86,12 +97,21 @@ public class darDeAltaTitular {
                 }
             }
         });
-
-        textFieldApellido.addKeyListener(new KeyAdapter() {
+        textFieldCP.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent evt) {
                 char c = evt.getKeyChar();
-                if (Character.isLetter(c)) {
+                if (Character.isDigit(c)) {
+                } else {
+                    evt.consume();
+                }
+            }
+        });
+        textFieldCuil.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (Character.isDigit(c)) {
                 } else {
                     evt.consume();
                 }
@@ -116,6 +136,8 @@ public class darDeAltaTitular {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+        frame.setSize(1000,500);
+        frame.setLocationRelativeTo(null);
         //ConexionDefault conectar = new ConexionDefault();
         //Connection con = conectar.openConnection();
 
