@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static src.bd.EmitirLicenciaBD.emitirLicenciaBD;
+import static src.bd.EmitirLicenciaBD.*;
 
 public class EmitirLicencia {
 
@@ -32,6 +32,10 @@ public class EmitirLicencia {
         return EmitirLicenciaBD.getIdTitularBD(nroDoc,tipoDoc);
     }
 
+    public static Date getFechaOtorgamiento(String nroDoc, String clase) throws SQLException {
+        return getFechaOtorgamientoBD(nroDoc,clase);
+    }
+
     public static ArrayList<String> getClaseByTitular(String nroDoc, String tipoDoc) throws SQLException{
         return EmitirLicenciaBD.getClaseByTitularBD(nroDoc,tipoDoc);
     }
@@ -42,6 +46,10 @@ public class EmitirLicencia {
 
     public static boolean validarEmisionPorClase(String nroDoc, String tipoDoc, String clase) throws SQLException {
         return getClaseByTitular(nroDoc, tipoDoc).contains(clase);
+    }
+
+    public static boolean validarVigenciaClase(String nroDoc, String clase) throws SQLException {
+        return validarVigenciaClaseBD(nroDoc, clase);
     }
 
     public static int calcularEdad(String fechaNacimiento){

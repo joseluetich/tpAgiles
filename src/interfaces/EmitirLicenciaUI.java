@@ -1,6 +1,7 @@
 package src.interfaces;
 
 import src.clases.*;
+import src.logica.CalcularVigenciaLicencia;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -15,6 +16,8 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import java.util.Objects;
 
@@ -43,10 +46,11 @@ public class EmitirLicenciaUI extends JFrame{
     private JComboBox<String> comboTipo;
     private JPanel panelEmitirLicencia;
     private JLabel labelBuscarTitular;
-    private JButton AtrasButton;
+    private JButton atrasButton;
     private static EmitirLicenciaUI emitirLicenciaUI;
+    private Date fechaNacimiento_date;
 
-    public EmitirLicenciaUI(MenuPrincipalUI menuPrincipalUI) throws SQLException {
+    public EmitirLicenciaUI(JFrame frameQueLoEjecuta) throws SQLException {
 
         emitirLicenciaUI = this;
         add(panelEmitirLicencia);
@@ -110,11 +114,13 @@ public class EmitirLicenciaUI extends JFrame{
                 try {
                         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
                         Date fechaOtorgamientoEmision_actual = new Date();
-                        //Date fechaVencimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(calcularVigenciaLicencia(nroDoc, getIdLicencia(), fechaNacimiento, fechaOtorgamientoEmision_actual))
-                        //Date fechaVencimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVencimiento_string);   //-> Referencia a HISTORIA 2 calcularVigencia(...);
-                        String fechaVencimiento_string = "2025-11-10";
                         String fechaOtorgamientoEmision_string = sdf.format(fechaOtorgamientoEmision_actual);
+
+                        Date fechaVencimiento_date = CalcularVigenciaLicencia.calcularVigencia(fechaNacimiento_date, campoNroDoc.getText(), String.valueOf(getIdLicencia()));
+                        String fechaVencimiento_string = sdf.format(fechaVencimiento_date);
+
 
                         double costo = 200.00; // -> Referencia a HISTORIA 3 calcularCosto(...)
 
@@ -164,13 +170,16 @@ public class EmitirLicenciaUI extends JFrame{
             }
         });
 
-        botonNuevoTitular.addActionListener(e -> JOptionPane.showMessageDialog(null, "Abriendo interfaz de carga de nuevo titular..."));
-        AtrasButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        botonNuevoTitular.addActionListener(e -> {
                 emitirLicenciaUI.hide();
-                menuPrincipalUI.show();
-            }
+                darDeAltaTitular darDeAltaTitularUI = new darDeAltaTitular(emitirLicenciaUI);
+                darDeAltaTitularUI.show();
+                emitirLicenciaUI.hide();
+    });
+
+        atrasButton.addActionListener(e -> {
+            emitirLicenciaUI.hide();
+            frameQueLoEjecuta.show();
         });
     }
 
@@ -199,80 +208,74 @@ public class EmitirLicenciaUI extends JFrame{
 
     public void seteoCamposTitular(String datosTitularBD) throws ParseException, SQLException {
 
-            String[] datosSplitteados = datosTitularBD.split(",");
+        String[] datosSplitteados = datosTitularBD.split(",");
 
-            String nombre = datosSplitteados[0];
-            String apellido = datosSplitteados[1];
-            String cuil = datosSplitteados[2];
-            String direccion = datosSplitteados[3];
-            String fechaNacimiento = datosSplitteados[4];
-            String grupoSanguineo = datosSplitteados[5];
-            String donanteOrganos = datosSplitteados[6];
-            String codigoPostal = datosSplitteados[7];
+        String nombre = datosSplitteados[0];
+        String apellido = datosSplitteados[1];
+        String cuil = datosSplitteados[2];
+        String direccion = datosSplitteados[3];
+        String fechaNacimiento = datosSplitteados[4];
+        String grupoSanguineo = datosSplitteados[5];
+        String donanteOrganos = datosSplitteados[6];
+        String codigoPostal = datosSplitteados[7];
 
-            campoTipoDoc.setText(Objects.requireNonNull(comboTipo.getSelectedItem()).toString());
-            campoNroDoc.setText(campoBuscarTitular.getText());
-            campoNombre.setText(nombre+" "+apellido);
-            campoCUIL.setText(cuil);
+        campoTipoDoc.setText(Objects.requireNonNull(comboTipo.getSelectedItem()).toString());
+        campoNroDoc.setText(campoBuscarTitular.getText());
+        campoNombre.setText(nombre + " " + apellido);
+        campoCUIL.setText(cuil);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            Date fechaNacimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaNacimiento);
-            campoFechaNacimiento.setText(sdf.format(fechaNacimiento_date));
-            campoDireccion.setText(direccion+", CP: "+codigoPostal);
-            campoGrupo.setText(grupoSanguineo);
-            donanteDeOrganosCheckBox.setSelected(Integer.parseInt(donanteOrganos) == 1);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        fechaNacimiento_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaNacimiento);
 
-            Date fechaActual = new Date();
-            campoFechaOtorgamiento.setText(sdf.format(fechaActual));
+        campoFechaNacimiento.setText(sdf.format(fechaNacimiento_date));
+        campoDireccion.setText(direccion + ", CP: " + codigoPostal);
+        campoGrupo.setText(grupoSanguineo);
+        donanteDeOrganosCheckBox.setSelected(Integer.parseInt(donanteOrganos) == 1);
 
-                if (calcularEdad(campoFechaNacimiento.getText()) >= 17 && calcularEdad(campoFechaNacimiento.getText()) <= 21) {
-                    comboClases.removeAllItems();
+        Date fechaActual = new Date();
+        campoFechaOtorgamiento.setText(sdf.format(fechaActual));
+
+        if (calcularEdad(campoFechaNacimiento.getText()) >= 17 && calcularEdad(campoFechaNacimiento.getText()) < 21) {
+            if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "A")) {
+                comboClases.removeAllItems();
+                comboClases.addItem("B");
+                comboClases.addItem("F");
+                comboClases.addItem("G");
+            }
+
+            comboClases.setSelectedItem(null);
+        } else if (calcularEdad(campoFechaNacimiento.getText()) >= 21 && calcularEdad(campoFechaNacimiento.getText()) <= 65) {
+            comboClases.removeAllItems();
+            if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "B")) {
+                Date fechaOtorgamiento = getFechaOtorgamiento(campoNroDoc.getText(),"B");
+                LocalDate fechaOtorgamiento_localDate = LocalDate.of(fechaOtorgamiento.getYear(), fechaOtorgamiento.getMonth(), fechaOtorgamiento.getDay());
+                LocalDate ahora = LocalDate.now();
+
+                System.out.println(fechaOtorgamiento_localDate);
+                System.out.println(ahora);
+
+                Period periodo = Period.between(fechaOtorgamiento_localDate, ahora);
+
+                if(periodo.getMonths()>=12){
+                    System.out.println(periodo.getMonths());
+                }
+
+                } else {
+
+                }
+            comboClases.setSelectedItem(null);
+        } else if (calcularEdad(campoFechaNacimiento.getText()) > 65) {
+            comboClases.removeAllItems();
+            if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "C")
+            ||  validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "D")
+            || validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "E")) {
                     comboClases.addItem("A");
                     comboClases.addItem("B");
                     comboClases.addItem("F");
                     comboClases.addItem("G");
-                    comboClases.setSelectedItem(null);
-                }
-                else if(calcularEdad(campoFechaNacimiento.getText()) >= 21 && calcularEdad(campoFechaNacimiento.getText()) <= 65){
-                    comboClases.removeAllItems();
-                    if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "B")) {
-                        comboClases.addItem("A");
-                        comboClases.addItem("B");
-                        comboClases.addItem("C");
-                        comboClases.addItem("D");
-                        comboClases.addItem("E");
-                        comboClases.addItem("F");
-                        comboClases.addItem("G");
-                    }
-                    else {
-                        comboClases.addItem("A");
-                        comboClases.addItem("B");
-                        comboClases.addItem("F");
-                        comboClases.addItem("G");
-                    }
-                    comboClases.setSelectedItem(null);
-                }
-                else if(calcularEdad(campoFechaNacimiento.getText()) > 65){
-                    comboClases.removeAllItems();
-                    if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "C")
-                        || validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "D")
-                        || validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "E")){
-                        comboClases.addItem("A");
-                        comboClases.addItem("B");
-                        comboClases.addItem("C");
-                        comboClases.addItem("D");
-                        comboClases.addItem("E");
-                        comboClases.addItem("F");
-                        comboClases.addItem("G");
-                    }
-                    else{
-                        comboClases.addItem("A");
-                        comboClases.addItem("B");
-                        comboClases.addItem("F");
-                        comboClases.addItem("G");
-                    }
-                }
+            }
         }
+    }
 
     public String tipoLicencia(){
             String tipoLicencia = "";

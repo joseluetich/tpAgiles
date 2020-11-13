@@ -11,7 +11,7 @@ import com.toedter.calendar.JDateChooser;
 
 import src.logica.*;
 
-public class darDeAltaTitular {
+public class darDeAltaTitular extends JFrame{
     private JPanel panel1;
     private JButton cancelarButton;
     private JComboBox comboBoxTipoDni;
@@ -23,9 +23,18 @@ public class darDeAltaTitular {
     private JCheckBox siCheckBox;
     private JButton confirmarButton;
     private JDateChooser JDateFechaNac;
+    private JButton atrasButton;
+    private static darDeAltaTitular darDeAltaTitularUI;
+
+    public darDeAltaTitular(JFrame frameQueLoEjecuta) {
+        darDeAltaTitularUI=this;
+        setTitle("Dar de alta titular");
+        add(panel1);
+        setSize(1000,500);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
-    public darDeAltaTitular() {
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -108,17 +117,13 @@ public class darDeAltaTitular {
                 }
             }
         });
-    }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Dar de alta titular");
-        frame.setContentPane(new darDeAltaTitular().panel1);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-        //ConexionDefault conectar = new ConexionDefault();
-        //Connection con = conectar.openConnection();
-
+        atrasButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                darDeAltaTitularUI.hide();
+                frameQueLoEjecuta.show();
+            }
+        });
     }
 
     private void createUIComponents() {

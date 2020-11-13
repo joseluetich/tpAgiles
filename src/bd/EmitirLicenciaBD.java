@@ -159,6 +159,24 @@ public class EmitirLicenciaBD {
             return retornoBD;
         }
 
+    public static boolean validarVigenciaClaseBD(String numDoc, String claseSolicitada) throws SQLException {
+        boolean retornoBD = false;
+        ConectarBD conectar = new ConectarBD();
+        Statement stmt = conectar.getStmt();
+        String SQL = "SELECT l.enVigencia "+
+                "FROM Clase c, Licencia l "+
+                "WHERE l.numeroDeLicencia="+numDoc+
+                " AND l.idLicencia = c.idLicencia"+
+                " AND l.enVigencia = "+1+
+                " AND c.tipo = '"+claseSolicitada+"'";
+        ResultSet rs = stmt.executeQuery(SQL);
+        while (rs.next()){
+            retornoBD = rs.getBoolean("l.enVigencia");
+        }
+        conectar.getCon().close();
+        return retornoBD;
+    }
+
     public static Titular buscarTitularAll(String nroDoc, String tipoDoc) throws SQLException {
         Titular titularBD = new Titular();
         ConectarBD conexion = new ConectarBD();
@@ -179,6 +197,24 @@ public class EmitirLicenciaBD {
         }
         conexion.getCon().close();
         return titularBD;
+    }
+
+    public static Date getFechaOtorgamientoBD(String nroDoc, String clase) throws SQLException {
+        Date retornoBD = null;
+        ConectarBD conectar = new ConectarBD();
+        Statement stmt = conectar.getStmt();
+        String SQL = "SELECT l.fechaDeOtorgamiento "+
+                "FROM Clase c, Licencia l "+
+                "WHERE l.numeroDeLicencia="+nroDoc+
+                " AND l.idLicencia = c.idLicencia"+
+                " AND l.enVigencia = "+1+
+                " AND c.tipo = '"+clase+"'";
+        ResultSet rs = stmt.executeQuery(SQL);
+        while (rs.next()){
+            retornoBD = rs.getDate("l.fechaDeOtorgamiento");
+        }
+        conectar.getCon().close();
+        return retornoBD;
     }
 
     }

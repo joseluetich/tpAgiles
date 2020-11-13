@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class MenuPrincipalUI  extends JFrame {
 
@@ -13,7 +14,6 @@ public class MenuPrincipalUI  extends JFrame {
     private JButton darDeAltaTitularButton;
     private JButton emitirCopiaLicenciaButton;
     private JLabel picLabel;
-    //private EmitirLicenciaUI emitirLicenciaUI;
     private static MenuPrincipalUI menuPrincipalUI;
 
     public static void main(String[] args) throws IOException {
@@ -48,22 +48,23 @@ public class MenuPrincipalUI  extends JFrame {
         darDeAltaTitularButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //DarAltaTitular darAltaTitular = new DarAltaTitular(menuPrincipalUI);
-                //darAltaTitular.show();
+                darDeAltaTitular darDeAltaTitularUI = new darDeAltaTitular(menuPrincipalUI);
+                darDeAltaTitularUI.show();
+                menuPrincipalUI.hide();
             }
         });
 
         emitirLicenciaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                /*try {
-                    //EmitirLicenciaUI emitirLicenciaUI = new EmitirLicenciaUI(menuPrincipalUI);
-                    //emitirLicenciaUI.show();
+                try {
+                    EmitirLicenciaUI emitirLicenciaUI = new EmitirLicenciaUI(menuPrincipalUI);
+                    emitirLicenciaUI.show();
                     menuPrincipalUI.hide();
 
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
-                }*/
+                }
             }
         });
         emitirCopiaLicenciaButton.addActionListener(new ActionListener() {
