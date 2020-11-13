@@ -1,11 +1,8 @@
 package bd;
-import javax.swing.plaf.nimbus.State;
+
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ConectarBD {
 
@@ -14,7 +11,7 @@ public class ConectarBD {
 
     public ConectarBD() throws SQLException {
         ConexionDefault conectar = new ConexionDefault();
-        Connection con = conectar.openConnection();
+        con = conectar.openConnection();
         stmt = con.createStatement();
     }
 

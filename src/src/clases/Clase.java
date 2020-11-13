@@ -12,6 +12,10 @@ public class Clase {
         this.licencia = licencia;
     }
 
+    public Clase() {
+
+    }
+
     public Integer getIdClase() {
         return idClase;
     }

@@ -12,6 +12,14 @@ public class Titular {
     private Date fechaDeNacimiento;
     private ArrayList<Licencia> licencias;
 
+    public Integer getIdTitular() {
+        return idTitular;
+    }
+
+    public void setIdTitular(Integer idTitular) {
+        this.idTitular = idTitular;
+    }
+
     public Usuario getCreadoPor() {
         return creadoPor;
     }
@@ -35,6 +43,10 @@ public class Titular {
         this.fechaDeNacimiento = fechaDeNacimiento;
         this.licencias = licencias;
         this.creadoPor = creadoPor;
+    }
+
+    public Titular(){
+
     }
 
     public tipoDeDocumento getTipoDoc() {
