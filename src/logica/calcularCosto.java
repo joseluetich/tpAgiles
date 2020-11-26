@@ -19,6 +19,7 @@ public static double calcularCostoLicencia (Licencia lic, Date fechaVigencia){
 
     double costo = 8.0;
     ArrayList<Clase> clases = lic.getClases();
+
     for (int i=0; i<clases.size(); i++){
         if(clases.get(i).toString().equals("A")||clases.get(i).toString().equals("B")||clases.get(i).toString().equals("G")){
             if (vigencia==5)  costo=costo+40.0;

@@ -112,14 +112,15 @@ public class EmitirLicenciaBD {
         ConectarBD conectar = new ConectarBD();
         int idLicencia = getIdLicenciaBD_int()+1;
         Statement stmt = conectar.getStmt();
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
         Integer numeroDeLicencia = lic.getNumeroDeLicencia();
         tipoLicencia tipo = lic.getTipoLicencia();
         Date fechaDeModificacion = lic.getFechaDeModificacion();
         Date fechaDeOtorgamiento = lic.getFechaDeOtorgamiento();
         Date fechaDeVencimiento = lic.getFechaDeVencimiento();
         String enVigencia = String.valueOf(lic.getEnVigencia());
+
         double costo = lic.getCosto();
         String observaciones = lic.getObservaciones();
         Titular titularLic = lic.getTitular();
@@ -128,8 +129,6 @@ public class EmitirLicenciaBD {
         String fechaDeModificacion_string = sdf.format(fechaDeModificacion);
         String fechaDeOtorgamiento_string = sdf.format(fechaDeOtorgamiento);
         String fechaDeVencimiento_string = sdf.format(fechaDeVencimiento);
-
-        updateVigenciaLicenciaTitular(numeroDeLicencia);
 
         String SQLLicencia = "INSERT INTO " +
                 "Licencia(idLicencia, numeroDeLicencia, tipo, fechaDeModificacion, fechaDeOtorgamiento, fechaDeVencimiento, enVigencia, costo, observaciones, titular) " +
@@ -199,8 +198,8 @@ public class EmitirLicenciaBD {
         return titularBD;
     }
 
-    public static Date getFechaOtorgamientoBD(String nroDoc, String clase) throws SQLException {
-        Date retornoBD = null;
+    public static String getFechaOtorgamientoBD(String nroDoc, String clase) throws SQLException {
+        String retornoBD = null;
         ConectarBD conectar = new ConectarBD();
         Statement stmt = conectar.getStmt();
         String SQL = "SELECT l.fechaDeOtorgamiento "+
@@ -211,7 +210,7 @@ public class EmitirLicenciaBD {
                 " AND c.tipo = '"+clase+"'";
         ResultSet rs = stmt.executeQuery(SQL);
         while (rs.next()){
-            retornoBD = rs.getDate("l.fechaDeOtorgamiento");
+            retornoBD = rs.getString("l.fechaDeOtorgamiento");
         }
         conectar.getCon().close();
         return retornoBD;
