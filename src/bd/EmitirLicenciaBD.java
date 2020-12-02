@@ -58,10 +58,18 @@ public class EmitirLicenciaBD {
         conectar.getCon().close();
     }
 
-    public static void updateVigenciaLicenciaTitular(Integer nroLicencia) throws SQLException {
+    public static void updateVigenciaLicenciaTitular(Integer idLicencia) throws SQLException {
         ConectarBD conexion = new ConectarBD();
-        Statement stmt = (conexion.getStmt());
-        String SQLUpdate = "UPDATE Licencia SET enVigencia = 0 WHERE numeroDeLicencia = "+nroLicencia+"";
+        Statement stmt = conexion.getStmt();
+        String SQLUpdate = "UPDATE Licencia SET enVigencia = 0 WHERE idLicencia = "+idLicencia+"";
+        stmt.execute(SQLUpdate);
+        conexion.getCon().close();
+    }
+
+    private static void updateVigenciaLicenciaTitularAll(String numeroDeDocumento) throws SQLException {
+        ConectarBD conexion = new ConectarBD();
+        Statement stmt = conexion.getStmt();
+        String SQLUpdate = "UPDATE Licencia SET enVigencia = 0 WHERE numeroDeLicencia = "+numeroDeDocumento+"";
         stmt.execute(SQLUpdate);
         conexion.getCon().close();
     }
@@ -83,8 +91,9 @@ public class EmitirLicenciaBD {
     }
 
     public static int getIdClaseBD_int() throws SQLException {
+        ConectarBD conectar = new ConectarBD();
         int retornoBD = 0;
-        Statement stmt = (new ConectarBD()).getStmt();
+        Statement stmt = conectar.getStmt();
         String SQL = "SELECT * FROM Clase " +
                 "ORDER BY idClase " +
                 "DESC LIMIT 1";
@@ -92,6 +101,7 @@ public class EmitirLicenciaBD {
         while (rs.next()){
             retornoBD = rs.getInt("idClase");
         }
+        conectar.getCon().close();
         return retornoBD;
     }
 
@@ -113,6 +123,7 @@ public class EmitirLicenciaBD {
         int idLicencia = getIdLicenciaBD_int()+1;
         Statement stmt = conectar.getStmt();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        ArrayList<String> tipoClases = new ArrayList<>();
 
         Integer numeroDeLicencia = lic.getNumeroDeLicencia();
         tipoLicencia tipo = lic.getTipoLicencia();
@@ -126,11 +137,50 @@ public class EmitirLicenciaBD {
         Titular titularLic = lic.getTitular();
         Integer idTitular = titularLic.getIdTitular();
 
+        for(Clase clases : lic.getClases())
+        {
+          tipoClases.add(clases.getTipo().toString());
+        }
+
+        if (cla.getTipo().toString().equals("F")){
+            for(Clase clases : lic.getClases()){
+                updateVigenciaLicenciaTitularAll(titularLic.getNumeroDeDocumento());
+            }
+        }
+
+        if(cla.getTipo().toString().equals("C")){
+            if (tipoClases.contains("B")){
+                updateVigenciaLicenciaTitular(Integer.parseInt(getIdLicenciaByClase("B", titularLic.getNumeroDeDocumento())));
+            }
+        }
+
+        if(cla.getTipo().toString().equals("D")){
+             if(tipoClases.contains("B")){
+                updateVigenciaLicenciaTitular(Integer.parseInt(getIdLicenciaByClase("B", titularLic.getNumeroDeDocumento())));
+            }
+
+            if (tipoClases.contains("C")){
+                updateVigenciaLicenciaTitular(Integer.parseInt(getIdLicenciaByClase("C", titularLic.getNumeroDeDocumento())));
+            }
+        }
+
+        if(cla.getTipo().toString().equals("E")){
+            if (tipoClases.contains("B")){
+                updateVigenciaLicenciaTitular(Integer.parseInt(getIdLicenciaByClase("B", titularLic.getNumeroDeDocumento())));
+            }
+            if (tipoClases.contains("C")){
+                updateVigenciaLicenciaTitular(Integer.parseInt(getIdLicenciaByClase("C", titularLic.getNumeroDeDocumento())));
+            }
+            if (tipoClases.contains("D")){
+                updateVigenciaLicenciaTitular(Integer.parseInt(getIdLicenciaByClase("D", titularLic.getNumeroDeDocumento())));
+            }
+        }
+
         String fechaDeModificacion_string = sdf.format(fechaDeModificacion);
         String fechaDeOtorgamiento_string = sdf.format(fechaDeOtorgamiento);
         String fechaDeVencimiento_string = sdf.format(fechaDeVencimiento);
 
-        String SQLLicencia = "INSERT INTO " +
+       String SQLLicencia = "INSERT INTO " +
                 "Licencia(idLicencia, numeroDeLicencia, tipo, fechaDeModificacion, fechaDeOtorgamiento, fechaDeVencimiento, enVigencia, costo, observaciones, titular) " +
                 "VALUES ("+idLicencia+", "+numeroDeLicencia+", "+"'"+tipo+"'"+", "+"'"+fechaDeModificacion_string+"'"+", "+"'"+fechaDeOtorgamiento_string+"'"+", "+"'"+fechaDeVencimiento_string+"'"+", "+enVigencia+", "+costo+", "+"'"+observaciones+"'"+", "+idTitular+ ") ";
         stmt.execute(SQLLicencia);
@@ -140,10 +190,31 @@ public class EmitirLicenciaBD {
         conectar.getCon().close();
     }
 
+    private static String getIdLicenciaByClase(String tipoClase, String nroDoc) throws SQLException {
+        String retornoBD = null;
+        ConectarBD conexion = new ConectarBD();
+        Statement stmt = conexion.getStmt();
+
+        String SQL = "SELECT Licencia.idLicencia " +
+                "FROM Licencia " +
+                "INNER JOIN Clase on Clase.idLicencia = Licencia.idLicencia " +
+                "WHERE Clase.tipo = "+"'"+tipoClase+"'"+" and Licencia.numeroDeLicencia = "+"'"+nroDoc+"'";
+
+        ResultSet rs = stmt.executeQuery(SQL);
+
+        while (rs.next()){
+            retornoBD = rs.getString("idLicencia");
+        }
+
+        conexion.getCon().close();
+        return retornoBD;
+    }
+
     public static ArrayList<String> getClaseByTitularBD(String nroDoc, String tipoDoc) throws SQLException {
             ArrayList<String> retornoBD = new ArrayList<>();
             ConectarBD conectar = new ConectarBD();
             Statement stmt = conectar.getStmt();
+
             String SQL = "SELECT Clase.tipo" +
                     " FROM Clase " +
                     "INNER JOIN Licencia ON Clase.idLicencia = Licencia.idLicencia " +
@@ -193,6 +264,7 @@ public class EmitirLicenciaBD {
             titularBD.setGrupoSanguineo(rs.getString("grupoSanguineo"));
             titularBD.setDonante(rs.getBoolean("donante"));
             titularBD.setCodigoPostal(rs.getString("codigoPostal"));
+            titularBD.setNumeroDeDocumento(rs.getString("numeroDeDocumento"));
         }
         conexion.getCon().close();
         return titularBD;
@@ -206,7 +278,6 @@ public class EmitirLicenciaBD {
                 "FROM Clase c, Licencia l "+
                 "WHERE l.numeroDeLicencia="+nroDoc+
                 " AND l.idLicencia = c.idLicencia"+
-                " AND l.enVigencia = "+1+
                 " AND c.tipo = '"+clase+"'";
         ResultSet rs = stmt.executeQuery(SQL);
         while (rs.next()){

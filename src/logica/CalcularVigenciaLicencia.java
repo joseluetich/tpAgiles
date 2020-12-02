@@ -16,9 +16,10 @@ public class CalcularVigenciaLicencia {
 
 
     public static Date calcularVigencia( Date fechaCumpleanios, String dniTitular, String idTitular) throws SQLException, ParseException {
+        ZoneId defaultZoneId = ZoneId.systemDefault();
 
         //Los meses en date empiezan en 1 y en time en 0
-        fechaCumpleanios.setMonth(fechaCumpleanios.getMonth()-1);
+        fechaCumpleanios.setMonth(fechaCumpleanios.getMonth());
         //convierto de Date a Time
         LocalDate fechaConvertida = fechaCumpleanios.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         System.out.println(fechaConvertida);
@@ -50,44 +51,42 @@ public class CalcularVigenciaLicencia {
         if(anios<=21 && retornoBD.isEmpty()){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(1);
             System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
-            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
-            return fechaOtorgDate;
+            Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
+            return date;
         }
 
         //si tuvo licencia y es menor de 21 => licencia por 3 año
         if(anios<=21 && !(retornoBD.isEmpty())){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(3);
             System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
-            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
-            return fechaOtorgDate;
+            Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
+            return date;
         }
 
         //entre 21 y 46=> licencia por 5 años
         if(anios>21 && anios<46){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(5);
             System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
-            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
-            return fechaOtorgDate;
+            Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
+            return date;
         }
         //entre 46 y 60 => licencia por 4 años
         if(anios>=46 && anios<60){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(4);
             System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
-            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
-            return fechaOtorgDate;
+            Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
+            return date;
         }
         //entre 60 y 70 => licencia por 1 año
         if(anios>=60 && anios<70){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(1);
             System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
-            Date fechaOtorgDate = new Date(fechaOtorgamiento.getYear(),fechaOtorgamiento.getMonthValue(), fechaOtorgamiento.getDayOfMonth());
-            return fechaOtorgDate;
+            Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
+            return date;
         }
 
         return fechaCumpleanios; //hubo un error
     }
-
-
 
   /*  public static void main(String[] args) throws SQLException, ParseException {
 

@@ -120,6 +120,9 @@ public class EmitirLicenciaUI extends JFrame {
                     Date fechaVencimiento_date = CalcularVigenciaLicencia.calcularVigencia(fechaNacimiento_date, campoNroDoc.getText(), String.valueOf(getIdLicencia()));
                     String fechaVencimiento_string = sdf.format(fechaVencimiento_date);
 
+                    System.out.println(fechaVencimiento_date.toString());
+                    System.out.println(fechaVencimiento_string);
+
                     int nroDoc = Integer.parseInt(campoNroDoc.getText());
                     String observaciones = campoObservaciones.getText();
                     String claseSolicitada = Objects.requireNonNull(comboClases.getSelectedItem()).toString();
@@ -276,6 +279,7 @@ public class EmitirLicenciaUI extends JFrame {
             }
 
         }
+
         //Si tiene entre 21 y 65 años puede sacar licencias profesionales si tiene una de clase B un año antes
         else if (calcularEdad(campoFechaNacimiento.getText()) >= 21 && calcularEdad(campoFechaNacimiento.getText()) < 65) {
             comboClases.removeAllItems();
@@ -290,6 +294,7 @@ public class EmitirLicenciaUI extends JFrame {
 
             if (clasesTitular.contains("F")) {
                 comboClases.removeAllItems();
+                return;
             } else {
                 comboClases.addItem("F");
             }
@@ -324,31 +329,41 @@ public class EmitirLicenciaUI extends JFrame {
                     }
                 }
 
-                //Si tiene mas de 65 años solo puede sacar una licencia profesional si se le emitio alguna antes
-                else if (calcularEdad(campoFechaNacimiento.getText()) >= 65) {
-                    comboClases.removeAllItems();
-                    if (!clasesTitular.contains("A")) {
-                        comboClases.addItem("A");
-                    }
-                    if (!clasesTitular.contains("B")) {
-                        comboClases.addItem("B");
-                    }
-                    if (!clasesTitular.contains("G")) {
-                        comboClases.addItem("G");
-                    }
-                    if (clasesTitular.contains("F")) {
-                        comboClases.removeAllItems();
-                    } else {
-                        comboClases.addItem("F");
-                    }
                 }
-            }
+            }   //Si tiene mas de 65 años solo puede sacar una licencia profesional si se le emitio alguna antes
+                else if (calcularEdad(campoFechaNacimiento.getText()) >= 65) {
+                comboClases.removeAllItems();
+
+                if (!clasesTitular.contains("A")) {
+                    comboClases.addItem("A");
+                }
+                if (!clasesTitular.contains("B")) {
+                    comboClases.addItem("B");
+                }
+                if (!clasesTitular.contains("G")) {
+                    comboClases.addItem("G");
+                }
+                if (clasesTitular.contains("F")) {
+                    comboClases.removeAllItems();
+                    return;
+                } else {
+                    comboClases.addItem("F");
+                }
+
+                if (clasesTitular.contains("C")) {
+                    comboClases.addItem("D");
+                    comboClases.addItem("E");
+                } else if (clasesTitular.contains("D")){
+                    comboClases.addItem("E");
+                }
+
+
         }
     }
 
     public String tipoLicencia(){
             String tipoLicencia = "";
-            if (Objects.requireNonNull(comboClases.getSelectedItem()).toString().equals("A") || comboClases.getSelectedItem().toString().equals("B")) {
+            if (Objects.requireNonNull(comboClases.getSelectedItem()).toString().equals("A") || comboClases.getSelectedItem().toString().equals("B") || comboClases.getSelectedItem().toString().equals("F") || comboClases.getSelectedItem().toString().equals("G")) {
                 tipoLicencia = "COMUN";
             } else if (comboClases.getSelectedItem().toString().equals("C") || comboClases.getSelectedItem().toString().equals("D") || comboClases.getSelectedItem().toString().equals("E") ) {
                 tipoLicencia = "PROFESIONAL";
@@ -385,11 +400,7 @@ public class EmitirLicenciaUI extends JFrame {
             public void keyPressed(KeyEvent e) {
                 try{
                     int i = Integer.parseInt(campoBuscarTitular.getText());
-                    labelBuscarTitular.setText("Seleccione el tipo e ingrese el Nro. de Doc.");
-                    labelBuscarTitular.setForeground(Color.black);
                 } catch (NumberFormatException ex){
-                    labelBuscarTitular.setText("* Ingrese solo números.");
-                    labelBuscarTitular.setForeground(Color.RED);
                 }
             }
         });
