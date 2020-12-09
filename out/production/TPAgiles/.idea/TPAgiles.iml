@@ -11,5 +11,6 @@
     <orderEntry type="library" name="mysql-connector-java-8.0.16" level="project" />
     <orderEntry type="library" exported="" name="jcalendar" level="project" />
     <orderEntry type="library" exported="" name="mysql-connector-java" level="project" />
+    <orderEntry type="library" exported="" name="barbecue-1.5-beta1" level="project" />
   </component>
 </module>

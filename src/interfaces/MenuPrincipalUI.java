@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class MenuPrincipalUI  extends JFrame {
-
-
     private JPanel panelMenuPrincipal;
     private JButton emitirLicenciaButton;
     private JButton darDeAltaTitularButton;
@@ -17,7 +15,6 @@ public class MenuPrincipalUI  extends JFrame {
     private static MenuPrincipalUI menuPrincipalUI;
 
     public static void main(String[] args) throws IOException {
-
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -28,10 +25,8 @@ public class MenuPrincipalUI  extends JFrame {
         } catch (Exception e) {
             ///
         }
-
         menuPrincipalUI = new MenuPrincipalUI();
         menuPrincipalUI.show();
-
     }
 
     public MenuPrincipalUI() throws IOException {
