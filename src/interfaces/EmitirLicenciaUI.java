@@ -1,32 +1,28 @@
 package src.interfaces;
 
 import src.clases.*;
+import src.logica.CalcularCosto;
 import src.logica.CalcularVigenciaLicencia;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 import static src.logica.EmitirLicencia.*;
 
-public class EmitirLicenciaUI extends JFrame{
+public class EmitirLicenciaUI extends JFrame {
 
     private JButton botonCancelar;
     private JButton botonNuevoTitular;
     private JButton botonConfirmar;
-    private JTextField campoNroLicencia;
     private JTextField campoTipoDoc;
     private JTextField campoNroDoc;
     private JTextField campoNombre;
@@ -43,10 +39,10 @@ public class EmitirLicenciaUI extends JFrame{
     private JButton botonBuscar;
     private JComboBox<String> comboTipo;
     private JPanel panelEmitirLicencia;
-    private JLabel labelBuscarTitular;
     private JButton atrasButton;
     private static EmitirLicenciaUI emitirLicenciaUI;
     private Date fechaNacimiento_date;
+    ArrayList<String> clasesTitular;
 
     public EmitirLicenciaUI(JFrame frameQueLoEjecuta) throws SQLException {
 
@@ -54,11 +50,10 @@ public class EmitirLicenciaUI extends JFrame{
         add(panelEmitirLicencia);
         setTitle("Emitir Licencia");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000,500);
+        setSize(1000, 500);
         setLocationRelativeTo(null);
         setResizable(false);
 
-        generacionIDLicencia();
         validacionBuscarTitular();
         inicializarComboTipo();
 
@@ -67,24 +62,22 @@ public class EmitirLicenciaUI extends JFrame{
 
         botonBuscar.addActionListener(e -> {
             String nroDocIngresado = campoBuscarTitular.getText();
-            if(nroDocIngresado.equals("") || nroDocIngresado.length()!=8){
+            if (nroDocIngresado.equals("") || nroDocIngresado.length() != 8) {
                 JOptionPane.showMessageDialog(null, "Ingrese un Nro. de Documento válido");
             }
-            if(comboTipo.getSelectedIndex() == -1){
+            if (comboTipo.getSelectedIndex() == -1) {
                 JOptionPane.showMessageDialog(null, "Seleccione un tipo de Documento");
-            }
-            else{
+            } else {
                 String datosTitular = null;
                 try {
-                    datosTitular = buscarTitular(nroDocIngresado,tipoDocIngresado());
+                    datosTitular = buscarTitular(nroDocIngresado, tipoDocIngresado());
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
                 assert datosTitular != null;
-                if(datosTitular.equals("")){
+                if (datosTitular.equals("")) {
                     JOptionPane.showMessageDialog(null, "No se pudo encontrar el titular");
-                }
-                else{
+                } else {
                     try {
                         seteoCamposTitular(datosTitular);
                     } catch (ParseException | SQLException parseException) {
@@ -110,55 +103,66 @@ public class EmitirLicenciaUI extends JFrame{
         botonConfirmar.addActionListener(e -> {
             if (validarCampos()) {
                 try {
-                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-                        Date fechaOtorgamientoEmision_actual = new Date();
-                        String fechaOtorgamientoEmision_string = sdf.format(fechaOtorgamientoEmision_actual);
+                    Date fechaOtorgamientoEmision_actual = new Date();
+                    String fechaOtorgamientoEmision_string = sdf.format(fechaOtorgamientoEmision_actual);
 
-                        Date fechaVencimiento_date = CalcularVigenciaLicencia.calcularVigencia(fechaNacimiento_date, campoNroDoc.getText(), String.valueOf(getIdLicencia()));
-                        String fechaVencimiento_string = sdf.format(fechaVencimiento_date);
+                    Date fechaVencimiento_date = CalcularVigenciaLicencia.calcularVigencia(fechaNacimiento_date, campoNroDoc.getText(), String.valueOf(getIdLicencia()));
+                    String fechaVencimiento_string = sdf.format(fechaVencimiento_date);
 
+                    System.out.println(fechaVencimiento_date.toString());
+                    System.out.println(fechaVencimiento_string);
 
-                        double costo = 200.00; // -> Referencia a HISTORIA 3 calcularCosto(...)
+                    int nroDoc = Integer.parseInt(campoNroDoc.getText());
+                    String observaciones = campoObservaciones.getText();
+                    String claseSolicitada = Objects.requireNonNull(comboClases.getSelectedItem()).toString();
+                    int edadMinimaClase = edadMinima(claseSolicitada);
 
-                        int nroDoc = Integer.parseInt(campoNroDoc.getText());
-                        String tipolicencia = tipoLicencia();
-                        String observaciones =  campoObservaciones.getText();
-                        int idTitular = getIdTitular(campoNroDoc.getText(), tipoDocIngresado());
-                        String claseSolicitada = comboClases.getSelectedItem().toString();
-                        int edadMinimaClase =  edadMinima();
+                    Licencia lic = new Licencia();
+                    lic.setNumeroDeLicencia(nroDoc);
+                    lic.setFechaDeModificacion(df.parse(fechaOtorgamientoEmision_string));
+                    lic.setFechaDeOtorgamiento(df.parse(fechaOtorgamientoEmision_string));
+                    lic.setFechaDeVencimiento(df.parse(fechaVencimiento_string));
+                    lic.setEnVigencia(true);
+                    lic.setObservaciones(observaciones);
+                    lic.setTipoLicencia(tipoLicencia.valueOf(tipoLicencia()));
+                    lic.setTitular(buscarTitularAll(campoNroDoc.getText(), tipoDocIngresado()));
 
-                        Licencia lic = new Licencia();
-                        lic.setNumeroDeLicencia(nroDoc);
-                        lic.setFechaDeModificacion(df.parse(fechaOtorgamientoEmision_string));
-                        lic.setFechaDeOtorgamiento(df.parse(fechaOtorgamientoEmision_string));
-                        lic.setFechaDeVencimiento(df.parse(fechaVencimiento_string));
-                        lic.setEnVigencia(true);
-                        lic.setCosto(costo);
-                        lic.setObservaciones(observaciones);
-                        lic.setTipoLicencia(tipoLicencia.valueOf(tipoLicencia()));
-                        lic.setTitular(buscarTitularAll(campoNroDoc.getText(),tipoDocIngresado()));
+                    Clase cla = new Clase();
+                    cla.setEdadMinima(edadMinimaClase);
+                    cla.setLicencia(lic);
+                    cla.setTipo(tipoClase.valueOf(claseSolicitada).toString());
 
-                        Clase cla = new Clase();
-                        cla.setEdadMinima(edadMinimaClase);
-                        cla.setLicencia(lic);
-                        cla.setTipo(tipoClase.valueOf(claseSolicitada).toString());
+                    ArrayList<Clase> clases = new ArrayList<>();
+                    clases.add(cla);
 
-                        emitirLicencia(lic,cla);
-                        JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
-                        refrescarPantalla();
-                        generacionIDLicencia();
+                    //Se recorren las clases de DB y se setean localmente en Licencia para calcular el costo a partir de estas
+                    for(String clases_tipo : clasesTitular)
+                    {
+                        Clase claseAGuardar = new Clase();
+                        claseAGuardar.setEdadMinima(edadMinima(clases_tipo));
+                        claseAGuardar.setTipo(tipoClase.valueOf(clases_tipo).toString());
+                        claseAGuardar.setLicencia(lic);
+                        clases.add(claseAGuardar);
+                    }
 
-            } catch (SQLException | ParseException throwables) {
-                throwables.printStackTrace();
-            }
+                    lic.setClases(clases);
 
-            }
-                else {
+                    double costo = CalcularCosto.calcularCostoLicencia(lic, fechaVencimiento_date);
+                    lic.setCosto(costo);
+
+                    emitirLicencia(lic, cla);
+
+                    JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
+                } catch (SQLException | ParseException throwables) {
+                    throwables.printStackTrace();
+                }
+            } else {
                 JOptionPane.showMessageDialog(null, "Revise los campos. No se pudo emitir la licencia.");
             }
-});
+        });
 
         botonCancelar.addActionListener(e -> {
             try {
@@ -169,17 +173,18 @@ public class EmitirLicenciaUI extends JFrame{
         });
 
         botonNuevoTitular.addActionListener(e -> {
-                emitirLicenciaUI.hide();
-                darDeAltaTitular darDeAltaTitularUI = new darDeAltaTitular(emitirLicenciaUI);
-                darDeAltaTitularUI.show();
-                emitirLicenciaUI.hide();
-    });
+            emitirLicenciaUI.hide();
+            darDeAltaTitular darDeAltaTitularUI = new darDeAltaTitular(emitirLicenciaUI);
+            darDeAltaTitularUI.show();
+            emitirLicenciaUI.hide();
+        });
 
         atrasButton.addActionListener(e -> {
             emitirLicenciaUI.hide();
             frameQueLoEjecuta.show();
         });
     }
+
 
     private void refrescarPantalla() throws SQLException {
         campoBuscarTitular.setText("");
@@ -195,7 +200,6 @@ public class EmitirLicenciaUI extends JFrame{
         campoFechaNacimiento.setText("");
         campoDireccion.setText("");
         campoFechaOtorgamiento.setText("");
-        generacionIDLicencia();
     }
 
     private boolean validarCampos() {
@@ -233,51 +237,125 @@ public class EmitirLicenciaUI extends JFrame{
         Date fechaActual = new Date();
         campoFechaOtorgamiento.setText(sdf.format(fechaActual));
 
+        clasesTitular = getClaseByTitular(campoBuscarTitular.getText(), tipoDocIngresado());
+        System.out.println(clasesTitular);
+
+        //Si tiene entre 17 y 21 años solo puede sacar Licencias Comunes
         if (calcularEdad(campoFechaNacimiento.getText()) >= 17 && calcularEdad(campoFechaNacimiento.getText()) < 21) {
-            if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "A")) {
+            if (clasesTitular.isEmpty()) {                                  //Tipo A,B,F,G si no tiene ninguna licencia
                 comboClases.removeAllItems();
+                comboClases.addItem("A");
                 comboClases.addItem("B");
                 comboClases.addItem("F");
                 comboClases.addItem("G");
             }
 
-            comboClases.setSelectedItem(null);
-        } else if (calcularEdad(campoFechaNacimiento.getText()) >= 21 && calcularEdad(campoFechaNacimiento.getText()) <= 65) {
             comboClases.removeAllItems();
-            if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "B")) {
-                Date fechaOtorgamiento = getFechaOtorgamiento(campoNroDoc.getText(),"B");
-                LocalDate fechaOtorgamiento_localDate = LocalDate.of(fechaOtorgamiento.getYear(), fechaOtorgamiento.getMonth(), fechaOtorgamiento.getDay());
-                LocalDate ahora = LocalDate.now();
 
-                System.out.println(fechaOtorgamiento_localDate);
-                System.out.println(ahora);
-
-                Period periodo = Period.between(fechaOtorgamiento_localDate, ahora);
-
-                if(periodo.getMonths()>=12){
-                    System.out.println(periodo.getMonths());
-                }
-
-                } else {
-
-                }
-            comboClases.setSelectedItem(null);
-        } else if (calcularEdad(campoFechaNacimiento.getText()) > 65) {
-            comboClases.removeAllItems();
-            if (validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "C")
-            ||  validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "D")
-            || validarEmisionPorClase(campoBuscarTitular.getText(), tipoDocIngresado(), "E")) {
-                    comboClases.addItem("A");
-                    comboClases.addItem("B");
-                    comboClases.addItem("F");
-                    comboClases.addItem("G");
+            if (!clasesTitular.contains("A")) {
+                comboClases.addItem("A");
             }
+
+            if (!clasesTitular.contains("B")) {
+                comboClases.addItem("B");
+            }
+
+            if (!clasesTitular.contains("G")) {
+                comboClases.addItem("G");
+            }
+
+            if (clasesTitular.contains("F")) {
+                comboClases.removeAllItems();
+            } else {
+                comboClases.addItem("F");
+            }
+
+        }
+
+        //Si tiene entre 21 y 65 años puede sacar licencias profesionales si tiene una de clase B un año antes
+        else if (calcularEdad(campoFechaNacimiento.getText()) >= 21 && calcularEdad(campoFechaNacimiento.getText()) < 65) {
+            comboClases.removeAllItems();
+
+            if (!clasesTitular.contains("A")) {
+                comboClases.addItem("A");
+            }
+
+            if (!clasesTitular.contains("G")) {
+                comboClases.addItem("G");
+            }
+
+            if (clasesTitular.contains("F")) {
+                comboClases.removeAllItems();
+                return;
+            } else {
+                comboClases.addItem("F");
+            }
+
+            if (!clasesTitular.contains("B")) {
+                comboClases.addItem("B");
+            } else {
+                Calendar inicio = new GregorianCalendar();
+                Calendar fin = new GregorianCalendar();
+                SimpleDateFormat sdfBD = new SimpleDateFormat("yyyy-MM-dd");
+
+                String fechaOtorgamiento = getFechaOtorgamiento(campoNroDoc.getText(), "B");
+
+                inicio.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(fechaOtorgamiento));
+                fin.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(sdfBD.format(fechaActual)));
+
+                int difAnios = fin.get(Calendar.YEAR) - inicio.get(Calendar.YEAR);
+                int difMeses = difAnios * 12 + fin.get(Calendar.MONTH) - inicio.get(Calendar.MONTH);
+
+                //Se le emitió una licencia de tipo B al menos un año antes
+                if (difMeses >= 12) {
+                    if (!clasesTitular.contains("C")) {
+                        comboClases.addItem("C");
+                    }
+
+                    if (!clasesTitular.contains("D")) {
+                        comboClases.addItem("D");
+                    }
+
+                    if (!clasesTitular.contains("E")) {
+                        comboClases.addItem("E");
+                    }
+                }
+
+                }
+            }   //Si tiene mas de 65 años solo puede sacar una licencia profesional si se le emitio alguna antes
+                else if (calcularEdad(campoFechaNacimiento.getText()) >= 65) {
+                comboClases.removeAllItems();
+
+                if (!clasesTitular.contains("A")) {
+                    comboClases.addItem("A");
+                }
+                if (!clasesTitular.contains("B")) {
+                    comboClases.addItem("B");
+                }
+                if (!clasesTitular.contains("G")) {
+                    comboClases.addItem("G");
+                }
+                if (clasesTitular.contains("F")) {
+                    comboClases.removeAllItems();
+                    return;
+                } else {
+                    comboClases.addItem("F");
+                }
+
+                if (clasesTitular.contains("C")) {
+                    comboClases.addItem("D");
+                    comboClases.addItem("E");
+                } else if (clasesTitular.contains("D")){
+                    comboClases.addItem("E");
+                }
+
+
         }
     }
 
     public String tipoLicencia(){
             String tipoLicencia = "";
-            if (Objects.requireNonNull(comboClases.getSelectedItem()).toString().equals("A") || comboClases.getSelectedItem().toString().equals("B")) {
+            if (Objects.requireNonNull(comboClases.getSelectedItem()).toString().equals("A") || comboClases.getSelectedItem().toString().equals("B") || comboClases.getSelectedItem().toString().equals("F") || comboClases.getSelectedItem().toString().equals("G")) {
                 tipoLicencia = "COMUN";
             } else if (comboClases.getSelectedItem().toString().equals("C") || comboClases.getSelectedItem().toString().equals("D") || comboClases.getSelectedItem().toString().equals("E") ) {
                 tipoLicencia = "PROFESIONAL";
@@ -285,11 +363,11 @@ public class EmitirLicenciaUI extends JFrame{
             return tipoLicencia;
         }
 
-    public int edadMinima(){
+    public int edadMinima(String tipoClase){
         int edadMinima = 0;
-        if (Objects.requireNonNull(comboClases.getSelectedItem()).toString().equals("A") || comboClases.getSelectedItem().toString().equals("B")) {
+        if (tipoClase.equals("A") || tipoClase.equals("B") || tipoClase.equals("G") || tipoClase.equals("F")) {
             edadMinima=17;
-        } else if (comboClases.getSelectedItem().toString().equals("C") || comboClases.getSelectedItem().toString().equals("D") || comboClases.getSelectedItem().toString().equals("E") ) {
+        } else if (tipoClase.equals("C") || tipoClase.equals("D") || tipoClase.equals("E") ) {
             edadMinima=21;
         }
         return edadMinima;
@@ -307,10 +385,6 @@ public class EmitirLicenciaUI extends JFrame{
             return tipoDocIngresado;
         }
 
-    public void generacionIDLicencia() throws SQLException {
-        campoNroLicencia.setText(getIdLicencia());
-    }
-
     public void validacionBuscarTitular(){
         campoBuscarTitular.setDocument(new CampoLimitado(8));
         campoBuscarTitular.addKeyListener(new KeyAdapter() {
@@ -318,11 +392,7 @@ public class EmitirLicenciaUI extends JFrame{
             public void keyPressed(KeyEvent e) {
                 try{
                     int i = Integer.parseInt(campoBuscarTitular.getText());
-                    labelBuscarTitular.setText("Seleccione el tipo e ingrese el Nro. de Doc.");
-                    labelBuscarTitular.setForeground(Color.black);
                 } catch (NumberFormatException ex){
-                    labelBuscarTitular.setText("* Ingrese solo números.");
-                    labelBuscarTitular.setForeground(Color.RED);
                 }
             }
         });

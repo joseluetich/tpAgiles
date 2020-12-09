@@ -32,7 +32,7 @@ public class EmitirLicencia {
         return EmitirLicenciaBD.getIdTitularBD(nroDoc,tipoDoc);
     }
 
-    public static Date getFechaOtorgamiento(String nroDoc, String clase) throws SQLException {
+    public static String getFechaOtorgamiento(String nroDoc, String clase) throws SQLException {
         return getFechaOtorgamientoBD(nroDoc,clase);
     }
 
@@ -63,6 +63,10 @@ public class EmitirLicencia {
 
     public static void emitirLicencia(Licencia lic, Clase cla) throws SQLException {
         emitirLicenciaBD(lic,cla);
+    }
+
+    public static void updateClase(Clase cla, Licencia lic){
+
     }
 
 }
