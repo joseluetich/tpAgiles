@@ -1,24 +1,19 @@
 package src.interfaces;
 
 import src.clases.*;
+import src.logica.CalcularCosto;
 import src.logica.CalcularVigenciaLicencia;
-import src.logica.calcularCosto;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
 
 import static src.logica.EmitirLicencia.*;
@@ -44,12 +39,9 @@ public class EmitirLicenciaUI extends JFrame {
     private JButton botonBuscar;
     private JComboBox<String> comboTipo;
     private JPanel panelEmitirLicencia;
-    private JLabel labelBuscarTitular;
     private JButton atrasButton;
     private static EmitirLicenciaUI emitirLicenciaUI;
     private Date fechaNacimiento_date;
-    private boolean porPrimeraVez = false;
-    private boolean licenciaA, licenciaF, licenciaG, licenciaB, licenciaC, licenciaD, licenciaE;
     ArrayList<String> clasesTitular;
 
     public EmitirLicenciaUI(JFrame frameQueLoEjecuta) throws SQLException {
@@ -158,7 +150,7 @@ public class EmitirLicenciaUI extends JFrame {
 
                     lic.setClases(clases);
 
-                    double costo = calcularCosto.calcularCostoLicencia(lic, fechaVencimiento_date);
+                    double costo = CalcularCosto.calcularCostoLicencia(lic, fechaVencimiento_date);
                     lic.setCosto(costo);
 
                     emitirLicencia(lic, cla);

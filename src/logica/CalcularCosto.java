@@ -3,13 +3,12 @@ package src.logica;
 import src.clases.*;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.ZoneId;
 import java.util.*;
 
 import static java.util.Calendar.*;
 
-public class calcularCosto {
+public class CalcularCosto {
 
 public static double calcularCostoLicencia (Licencia lic, Date fechaVigencia){
     ZoneId defaultZoneId = ZoneId.systemDefault();

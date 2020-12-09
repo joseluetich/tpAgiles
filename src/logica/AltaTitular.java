@@ -10,7 +10,7 @@ import java.util.Date;
 
 import src.bd.darDeAltaTitularBD;
 
-public class logicaAltaTitular {
+public class AltaTitular {
 
     public static String validar(String tipoDoc, String numeroDoc, String apellido, String nombre, String direccion, Date fechaNac) {
         if(tipoDoc.equals("Seleccionar")) {
