@@ -11,7 +11,7 @@ import com.toedter.calendar.JDateChooser;
 
 import src.logica.*;
 
-public class darDeAltaTitular extends JFrame{
+public class DarDeAltaTitular extends JFrame{
     private JPanel panel1;
     private JButton cancelarButton;
     private JComboBox comboBoxTipoDni;
@@ -24,9 +24,9 @@ public class darDeAltaTitular extends JFrame{
     private JButton confirmarButton;
     private JDateChooser JDateFechaNac;
     private JButton atrasButton;
-    private static darDeAltaTitular darDeAltaTitularUI;
+    private static DarDeAltaTitular darDeAltaTitularUI;
 
-    public darDeAltaTitular(JFrame frameQueLoEjecuta) {
+    public DarDeAltaTitular(JFrame frameQueLoEjecuta) {
         darDeAltaTitularUI=this;
         setTitle("Dar de alta titular");
         add(panel1);
@@ -34,12 +34,15 @@ public class darDeAltaTitular extends JFrame{
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(panel1);
-                frame.dispose();
+                comboBoxTipoDni.setSelectedIndex(0);
+                comboBoxGrupoS.setSelectedIndex(-1);
+                textFieldNroDoc.setText("");
+                textFieldNombre.setText("");
+                textFieldApellido.setText("");
+                textFieldDireccion.setText("");
             }
         });
 

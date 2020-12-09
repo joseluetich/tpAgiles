@@ -174,7 +174,7 @@ public class EmitirLicenciaUI extends JFrame {
 
         botonNuevoTitular.addActionListener(e -> {
             emitirLicenciaUI.hide();
-            darDeAltaTitular darDeAltaTitularUI = new darDeAltaTitular(emitirLicenciaUI);
+            DarDeAltaTitular darDeAltaTitularUI = new DarDeAltaTitular(emitirLicenciaUI);
             darDeAltaTitularUI.show();
             emitirLicenciaUI.hide();
         });

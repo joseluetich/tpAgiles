@@ -48,7 +48,7 @@ public class MenuPrincipalUI  extends JFrame {
         darDeAltaTitularButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                darDeAltaTitular darDeAltaTitularUI = new darDeAltaTitular(menuPrincipalUI);
+                DarDeAltaTitular darDeAltaTitularUI = new DarDeAltaTitular(menuPrincipalUI);
                 darDeAltaTitularUI.show();
                 menuPrincipalUI.hide();
             }
