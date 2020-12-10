@@ -40,18 +40,6 @@ public class EmitirLicencia {
         return EmitirLicenciaBD.getClaseByTitularBD(nroDoc,tipoDoc);
     }
 
-    public static Date calcularVigencia(Date fechaNac, String nroDoc, String tipDoc){
-        return null;
-    }
-
-    public static boolean validarEmisionPorClase(String nroDoc, String tipoDoc, String clase) throws SQLException {
-        return getClaseByTitular(nroDoc, tipoDoc).contains(clase);
-    }
-
-    public static boolean validarVigenciaClase(String nroDoc, String clase) throws SQLException {
-        return validarVigenciaClaseBD(nroDoc, clase);
-    }
-
     public static int calcularEdad(String fechaNacimiento){
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate fechaNac = LocalDate.parse(fechaNacimiento, fmt);
@@ -61,12 +49,8 @@ public class EmitirLicencia {
         return periodo.getYears();
     }
 
-    public static void emitirLicencia(Licencia lic, Clase cla) throws SQLException {
-        emitirLicenciaBD(lic,cla);
-    }
-
-    public static void updateClase(Clase cla, Licencia lic){
-
+    public static void emitirLicencia(Licencia lic, Clase cla, boolean donante) throws SQLException {
+        emitirLicenciaBD(lic,cla,donante);
     }
 
 }
