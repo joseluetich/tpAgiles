@@ -35,7 +35,6 @@ public class ConexionDefault {
         return connect;
     }
 
-
     public void closeConnection(Connection connect){
         try {
             connect.close();

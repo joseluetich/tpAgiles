@@ -1,4 +1,5 @@
 package src.interfaces;
+import src.bd.ConectarBD;
 import src.bd.ConexionDefault;
 import src.bd.RenovarLicenciaBD;
 import src.bd.EmitirCopiaDB;
@@ -10,8 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.table.JTableHeader;
 import java.awt.event.*;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -210,40 +210,7 @@ public class RenovarLicencia extends JFrame implements MouseListener{
     private Object[][] obtenerMatrizDatos(ArrayList titulosList) throws SQLException {
         //se crea la matriz donde las filas son dinamicas pues corresponde mientras que las columnas son estaticas
 
-        ArrayList<String> licenciasVigentes = new ArrayList<String>();
-        String informacion[][] = new String[0][0];
-
-        try {
-            licenciasVigentes = RenovarLicenciaBD.getLicencias();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        assert licenciasVigentes != null;
-        if(licenciasVigentes.isEmpty()){
-            JOptionPane.showMessageDialog(null, "No se pudieron encontrar licencias vigentes");
-        }
-        else{
-            ArrayList<String> licenciasVigentesAux = new ArrayList<String>(licenciasVigentes);
-
-            while (!licenciasVigentesAux.isEmpty()) {
-                String[] datosSplitteadosLicencias = licenciasVigentesAux.get(0).split(",");
-                String idLicencia = datosSplitteadosLicencias[0];
-
-                ArrayList<String> clasesBD = getClaseByID(idLicencia);
-
-                for (int j = 0; j < clasesBD.size(); j++) filasTabla++;
-                licenciasVigentesAux.remove(0);
-            }
-
-            System.out.println(filasTabla);
-            System.out.println(licenciasVigentesAux);
-            System.out.println(licenciasVigentes);
-
-            informacion = new String[filasTabla][titulosList.size()];
-            seteoCamposLicencias(licenciasVigentes, informacion);
-            filasTabla = 0;
-        }
-
+        String informacion[][] = RenovarLicenciaBD.getInformacionTabla();
         return informacion;
     }
 
@@ -369,54 +336,5 @@ public class RenovarLicencia extends JFrame implements MouseListener{
 
     }
 
-    public void seteoCamposLicencias(ArrayList<String> licenciasVigentes, String[][] informacion) {
-
-        int fila = 0;
-
-        while (!licenciasVigentes.isEmpty()) {
-
-            String[] datosSplitteadosLicencias = licenciasVigentes.get(0).split(",");
-
-            String idLicencia = datosSplitteadosLicencias[0];
-            String titular = datosSplitteadosLicencias[1];
-            String num_licencia = datosSplitteadosLicencias[2];
-
-            String titularBD = "";
-            try {
-                titularBD = getTitularByID(titular);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-            assert titularBD != null;
-
-            String[] datosSplitteadosTitular = titularBD.split(",");
-
-            String tipoDoc = datosSplitteadosTitular[0];
-            String numDoc = datosSplitteadosTitular[1];
-            String apellido = datosSplitteadosTitular[2];
-            String nombre = datosSplitteadosTitular[3];
-
-            ArrayList<String> clasesBD = new ArrayList<String>();
-            try {
-                clasesBD = getClaseByID(idLicencia);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-            assert clasesBD != null;
-
-            for (int j = 0; j < clasesBD.size(); j++) {
-                informacion[fila][ColumnasTabla.APELLIDO] = apellido;
-                informacion[fila][ColumnasTabla.NOMBRE] = nombre;
-                informacion[fila][ColumnasTabla.TIPO_DOCUMENTO] = tipoDoc;
-                informacion[fila][ColumnasTabla.DOCUMENTO] = numDoc;
-                informacion[fila][ColumnasTabla.NUM_LICENCIA] = num_licencia;
-                informacion[fila][ColumnasTabla.CLASE_LICENCIA] = clasesBD.get(j);
-                fila++;
-            }
-
-            licenciasVigentes.remove(0);
-        }
-
-    }
 
 }
