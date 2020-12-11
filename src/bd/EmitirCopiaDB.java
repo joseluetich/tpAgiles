@@ -82,7 +82,6 @@ public class EmitirCopiaDB {
         return retornoBD;
     }
 
-
     public static ArrayList<String> getLicenciasVigentes() throws SQLException {
         ArrayList<String> retornoBD = new ArrayList<String>();
         ConectarBD conectar = new ConectarBD();
