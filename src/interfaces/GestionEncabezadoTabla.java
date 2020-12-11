@@ -23,7 +23,7 @@ public class GestionEncabezadoTabla  implements TableCellRenderer {
             jcomponent = new JLabel((String) value);
             ((JLabel)jcomponent).setHorizontalAlignment( SwingConstants.CENTER );
             ((JLabel)jcomponent).setSize( 30, jcomponent.getWidth() );
-            ((JLabel)jcomponent).setPreferredSize( new Dimension(6, jcomponent.getWidth())  );
+            ((JLabel)jcomponent).setPreferredSize( new Dimension(5, jcomponent.getWidth())  );
         }
 
         //jcomponent.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 1, new java.awt.Color(221, 211, 211)));
