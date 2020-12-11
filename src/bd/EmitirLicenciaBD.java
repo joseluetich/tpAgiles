@@ -66,6 +66,14 @@ public class EmitirLicenciaBD {
         conexion.getCon().close();
     }
 
+    public static void updateDonanteTitular(String nroDoc, boolean donante) throws SQLException {
+        ConectarBD conexion = new ConectarBD();
+        Statement stmt = conexion.getStmt();
+        String SQLUpdate = "UPDATE Titular SET donante = "+donante+" WHERE numeroDeDocumento = "+nroDoc+"";
+        stmt.execute(SQLUpdate);
+        conexion.getCon().close();
+    }
+
     private static void updateVigenciaLicenciaTitularAll(String numeroDeDocumento) throws SQLException {
         ConectarBD conexion = new ConectarBD();
         Statement stmt = conexion.getStmt();
@@ -118,7 +126,7 @@ public class EmitirLicenciaBD {
         return retornoBD;
     }
 
-    public static void emitirLicenciaBD(Licencia lic, Clase cla) throws SQLException {
+    public static void emitirLicenciaBD(Licencia lic, Clase cla, boolean donante) throws SQLException {
         ConectarBD conectar = new ConectarBD();
         int idLicencia = getIdLicenciaBD_int()+1;
         Statement stmt = conectar.getStmt();
@@ -186,6 +194,7 @@ public class EmitirLicenciaBD {
         stmt.execute(SQLLicencia);
 
         insertClase(cla,idLicencia);
+        updateDonanteTitular(titularLic.getNumeroDeDocumento(), donante);
 
         updateLicenciasVigentes(fechaDeVencimiento_string, fechaDeOtorgamiento_string, numeroDeLicencia);
 
@@ -275,6 +284,8 @@ public class EmitirLicenciaBD {
             titularBD.setDonante(rs.getBoolean("donante"));
             titularBD.setCodigoPostal(rs.getString("codigoPostal"));
             titularBD.setNumeroDeDocumento(rs.getString("numeroDeDocumento"));
+            titularBD.setTipoDoc(tipoDeDocumento.stringToTipoDoc(rs.getString("tipoDeDocumento")));
+            titularBD.setCuil(rs.getString("cuil"));
         }
         conexion.getCon().close();
         return titularBD;

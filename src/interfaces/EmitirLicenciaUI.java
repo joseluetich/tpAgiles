@@ -1,5 +1,7 @@
 package src.interfaces;
 
+import net.sourceforge.barbecue.BarcodeException;
+import net.sourceforge.barbecue.output.OutputException;
 import src.clases.*;
 import src.logica.CalcularCosto;
 import src.logica.CalcularVigenciaLicencia;
@@ -19,7 +21,6 @@ import java.util.*;
 import static src.logica.EmitirLicencia.*;
 
 public class EmitirLicenciaUI extends JFrame {
-
     private JButton botonCancelar;
     private JButton botonNuevoTitular;
     private JButton botonConfirmar;
@@ -44,7 +45,7 @@ public class EmitirLicenciaUI extends JFrame {
     private Date fechaNacimiento_date;
     ArrayList<String> clasesTitular;
 
-    public EmitirLicenciaUI(JFrame frameQueLoEjecuta) throws SQLException {
+    public EmitirLicenciaUI(MenuPrincipalUI menuPrincipalUI) throws SQLException {
         emitirLicenciaUI = this;
         add(panelEmitirLicencia);
         setTitle("Emitir Licencia");
@@ -128,6 +129,7 @@ public class EmitirLicenciaUI extends JFrame {
                     lic.setObservaciones(observaciones);
                     lic.setTipoLicencia(tipoLicencia.valueOf(tipoLicencia()));
                     lic.setTitular(buscarTitularAll(campoNroDoc.getText(), tipoDocIngresado()));
+                    lic.getTitular().setDonante(donanteDeOrganosCheckBox.isSelected());
 
                     Clase cla = new Clase();
                     cla.setEdadMinima(edadMinimaClase);
@@ -152,10 +154,21 @@ public class EmitirLicenciaUI extends JFrame {
                     double costo = CalcularCosto.calcularCostoLicencia(lic, fechaVencimiento_date);
                     lic.setCosto(costo);
 
-                    emitirLicencia(lic, cla);
+                    emitirLicencia(lic, cla, donanteDeOrganosCheckBox.isSelected());
 
                     JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
-                } catch (SQLException | ParseException throwables) {
+
+                    int dialogButton = JOptionPane.YES_NO_OPTION;
+                    int dialogResult = JOptionPane.showConfirmDialog(this, "¿Desea imprimir la licencia y el comprobante de pago?", "Imprimir", dialogButton);
+                    if(dialogResult == 0) {
+                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText());
+                    } else {
+
+                    }
+
+                    botonCancelar.doClick();
+
+                } catch (SQLException | ParseException | OutputException | BarcodeException throwables) {
                     throwables.printStackTrace();
                 }
             } else {
@@ -180,10 +193,9 @@ public class EmitirLicenciaUI extends JFrame {
 
         atrasButton.addActionListener(e -> {
             emitirLicenciaUI.hide();
-            frameQueLoEjecuta.show();
+            menuPrincipalUI.show();
         });
     }
-
 
     private void refrescarPantalla() throws SQLException {
         campoBuscarTitular.setText("");
