@@ -14,6 +14,7 @@ public class MenuPrincipalUI  extends JFrame {
     private JButton darDeAltaTitularButton;
     private JButton emitirCopiaLicenciaButton;
     private JLabel picLabel;
+    private JButton licenciasExpiradasButton;
     private static MenuPrincipalUI menuPrincipalUI;
 
     public static void main(String[] args) throws IOException {
@@ -79,5 +80,20 @@ public class MenuPrincipalUI  extends JFrame {
                 }
             }
         });
+
+        licenciasExpiradasButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    ListaLicenciasExpiradas listaLicenciasExpiradas = new ListaLicenciasExpiradas(menuPrincipalUI);
+                    listaLicenciasExpiradas.show();
+                    menuPrincipalUI.hide();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        });
+
+
     }
 }

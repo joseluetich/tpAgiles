@@ -4,39 +4,84 @@ import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+
+import static src.bd.ListadoLicenciasBD.*;
+import static src.bd.EmitirCopiaDB.*;
 
 public class ListaLicenciasExpiradas extends JFrame {
 
     private JDateChooser JDateDesde;
     private JDateChooser JDateHasta;
     private JPanel panel1;
-    private ModeloTabla modelo;
     private JTable table1;
-    private JButton atrásButton;
-    private JButton confirmarButton;
+    private JButton atrasButton;
+    private JButton buscarButton;
     private JButton cancelarButton;
-    private int columnasTabla;
+    private int filasTabla = 0;
+
+    private ModeloTabla modelo;
 
     public static ListaLicenciasExpiradas listaUI;
 
-    public static void main(String[] args) throws IOException, SQLException {
-        listaUI = new ListaLicenciasExpiradas();
-        listaUI.show();
+    public ListaLicenciasExpiradas(JFrame frameQueLoEjecuta) throws SQLException {
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // If Nimbus is not available, you can set the GUI to another look and feel.
+        }
 
-    }
-
-    public ListaLicenciasExpiradas() throws SQLException {
+        listaUI = this;
         add(panel1);
         setTitle("Lista Licencias");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000,500);
+        iniciarComponentes();
         setLocationRelativeTo(null);
-        setResizable(false);
         construirTabla();
+
+        buscarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+            }
+        });
+
+        cancelarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JDateDesde.setDate(new Date());
+                JDateHasta.setDate(new Date());
+            }
+        });
+
+
+        atrasButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaUI.hide();
+                frameQueLoEjecuta.show();
+            }
+        });
+
+    }
+
+    private void iniciarComponentes() {
+        table1.setBackground(Color.WHITE);
+        table1.setOpaque(false);
+        table1.setSize(150, 300);
     }
 
     private void construirTabla() throws SQLException {
@@ -54,10 +99,90 @@ public class ListaLicenciasExpiradas extends JFrame {
             titulos[i] = titulosList.get(i);
         }
 
+        Object[][] informacion = obtenerMatrizDatos(titulosList);
+        construirTabla(titulos, informacion);
+    }
+
+    private Object[][] obtenerMatrizDatos(ArrayList titulosList) throws SQLException {
+        //se crea la matriz donde las filas son dinamicas pues corresponde mientras que las columnas son estaticas
+
+        ArrayList<String> licenciasNoVigentes = new ArrayList<String>();
         String informacion[][] = new String[0][0];
 
-        //obtenerMatrizDatos(titulosList);
-        construirTabla(titulos, informacion);
+        try {
+            licenciasNoVigentes = getLicenciasNoVigentes();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        assert licenciasNoVigentes != null;
+        if(licenciasNoVigentes.isEmpty()){
+            JOptionPane.showMessageDialog(null, "No se pudieron encontrar licencias vigentes");
+        }
+        else{
+            ArrayList<String> licenciasNoVigentesAux = new ArrayList<String>(licenciasNoVigentes);
+
+            while (!licenciasNoVigentesAux.isEmpty()) {
+                String[] datosSplitteadosLicencias = licenciasNoVigentesAux.get(0).split(",");
+                String idLicencia = datosSplitteadosLicencias[0];
+
+                ArrayList<String> clasesBD = getClaseByID(idLicencia);
+
+                for (int j = 0; j < clasesBD.size(); j++) filasTabla++;
+                licenciasNoVigentesAux.remove(0);
+            }
+
+            //System.out.println(filasTabla);
+            //System.out.println(licenciasNoVigentesAux);
+            //System.out.println(licenciasNoVigentes);
+
+            informacion = new String[filasTabla][titulosList.size()];
+            seteoCamposLicencias(licenciasNoVigentes, informacion);
+            filasTabla = 0;
+        }
+
+        return informacion;
+    }
+
+    public void seteoCamposLicencias(ArrayList<String> licenciasNoVigentes, String[][] informacion) {
+        int fila = 0;
+        while (!licenciasNoVigentes.isEmpty()) {
+            String[] datosSplitteadosLicencias = licenciasNoVigentes.get(0).split(",");
+
+            String idLicencia = datosSplitteadosLicencias[0];
+            String titular = datosSplitteadosLicencias[1];
+            String fecha = datosSplitteadosLicencias[2];
+
+            String titularBD = "";
+            try {
+                titularBD = getTitularByID(titular);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            assert titularBD != null;
+
+            String[] datosSplitteadosTitular = titularBD.split(",");
+
+            String apellido_nombre = datosSplitteadosTitular[3] + " " + datosSplitteadosTitular[2];
+
+            ArrayList<String> clasesBD = new ArrayList<String>();
+            try {
+                clasesBD = getClaseByID(idLicencia);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            assert clasesBD != null;
+
+            for (int j = 0; j < clasesBD.size(); j++) {
+                informacion[fila][ColumnasTablaLicExp.ID] = idLicencia;
+                informacion[fila][ColumnasTablaLicExp.NOMBRE_APELLIDO] = apellido_nombre;
+                informacion[fila][ColumnasTablaLicExp.FECHA] = fecha;
+                informacion[fila][ColumnasTablaLicExp.CLASE_LICENCIA] = clasesBD.get(j);
+                fila++;
+            }
+
+            licenciasNoVigentes.remove(0);
+        }
+
     }
 
     private void construirTabla(String[] titulos, Object[][] data) {
@@ -68,15 +193,13 @@ public class ListaLicenciasExpiradas extends JFrame {
 
         //filasTabla=data.length;
         //filasTabla=licenciasTable.getRowCount();
-        columnasTabla = table1.getColumnCount();
+        //columnasTabla = table1.getColumnCount();
 
         //se asigna el tipo de dato que tendrán las celdas de cada columna definida respectivamente para validar su personalización
         table1.getColumnModel().getColumn(ColumnasTablaLicExp.ID).setCellRenderer(new GestionCeldas("texto"));
         table1.getColumnModel().getColumn(ColumnasTablaLicExp.NOMBRE_APELLIDO).setCellRenderer(new GestionCeldas("texto"));
         table1.getColumnModel().getColumn(ColumnasTablaLicExp.FECHA).setCellRenderer(new GestionCeldas("texto"));
         table1.getColumnModel().getColumn(ColumnasTablaLicExp.CLASE_LICENCIA).setCellRenderer(new GestionCeldas("texto"));
-        //licenciasVigentesTable.getColumnModel().getColumn(ColumnasTabla.NOMBRE).setCellRenderer(new GestionCeldas("numerico"));
-
 
         table1.getTableHeader().setReorderingAllowed(false);
         table1.setRowHeight(25);//tamaño de las celdas
@@ -96,11 +219,7 @@ public class ListaLicenciasExpiradas extends JFrame {
         //se asigna la tabla al scrollPane
         //scrollPaneTabla.setViewportView(licenciasTable);
 
-
     }
-
-
-
 
     private void createUIComponents() {
         JDateDesde = new JDateChooser();
@@ -109,4 +228,5 @@ public class ListaLicenciasExpiradas extends JFrame {
         JDateHasta = new JDateChooser();
         JDateHasta.setDate(new Date());
     }
+
 }
