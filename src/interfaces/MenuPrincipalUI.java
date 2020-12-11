@@ -35,7 +35,6 @@ public class MenuPrincipalUI  extends JFrame {
     }
 
     public MenuPrincipalUI() throws IOException {
-
         add(panelMenuPrincipal);
         setTitle("Menú principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -67,6 +66,7 @@ public class MenuPrincipalUI  extends JFrame {
                 }
             }
         });
+
         emitirCopiaLicenciaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

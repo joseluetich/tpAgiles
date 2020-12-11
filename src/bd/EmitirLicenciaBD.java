@@ -187,7 +187,17 @@ public class EmitirLicenciaBD {
 
         insertClase(cla,idLicencia);
 
+        updateLicenciasVigentes(fechaDeVencimiento_string, fechaDeOtorgamiento_string, numeroDeLicencia);
+
         conectar.getCon().close();
+    }
+
+    private static void updateLicenciasVigentes(String fechaDeVencimiento, String fechaDeOtorgamiento, int numeroDeLicencia) throws SQLException {
+        ConectarBD conexion = new ConectarBD();
+        Statement stmt = conexion.getStmt();
+        String SQLUpdate = "UPDATE Licencia SET fechaDeVencimiento = "+"'"+fechaDeVencimiento+"'"+", fechaDeOtorgamiento="+"'"+fechaDeOtorgamiento+"'"+" WHERE numeroDeLicencia = "+numeroDeLicencia+" AND enVigencia = 1";
+        stmt.execute(SQLUpdate);
+        conexion.getCon().close();
     }
 
     private static String getIdLicenciaByClase(String tipoClase, String nroDoc) throws SQLException {

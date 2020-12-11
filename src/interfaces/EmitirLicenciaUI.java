@@ -45,7 +45,6 @@ public class EmitirLicenciaUI extends JFrame {
     ArrayList<String> clasesTitular;
 
     public EmitirLicenciaUI(JFrame frameQueLoEjecuta) throws SQLException {
-
         emitirLicenciaUI = this;
         add(panelEmitirLicencia);
         setTitle("Emitir Licencia");
