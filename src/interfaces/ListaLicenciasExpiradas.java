@@ -26,6 +26,8 @@ public class ListaLicenciasExpiradas extends JFrame {
     private JButton buscarButton;
     private JButton cancelarButton;
     private int filasTabla = 0;
+    private ArrayList<String> titulosList;
+    private String[] titulos;
 
     private ModeloTabla modelo;
 
@@ -55,6 +57,15 @@ public class ListaLicenciasExpiradas extends JFrame {
         buscarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                Date fechaDesde = JDateDesde.getDate();
+                Date fechaHasta = JDateHasta.getDate();
+
+                try {
+                    Object[][] informacion = obtenerMatrizDatos(titulosList, true, fechaDesde, fechaHasta);
+                    construirTabla(titulos, informacion);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -85,8 +96,7 @@ public class ListaLicenciasExpiradas extends JFrame {
     }
 
     private void construirTabla() throws SQLException {
-
-        ArrayList<String> titulosList = new ArrayList<>();
+        titulosList = new ArrayList<>();
 
         titulosList.add("ID Licencia");
         titulosList.add("Nombre y Apellido");
@@ -94,16 +104,16 @@ public class ListaLicenciasExpiradas extends JFrame {
         titulosList.add("Clase");
 
         //se asignan las columnas al arreglo para enviarse al momento de construir la tabla
-        String titulos[] = new String[titulosList.size()];
+        titulos = new String[titulosList.size()];
         for (int i = 0; i < titulos.length; i++) {
             titulos[i] = titulosList.get(i);
         }
 
-        Object[][] informacion = obtenerMatrizDatos(titulosList);
+        Object[][] informacion = obtenerMatrizDatos(titulosList, false, null, null);
         construirTabla(titulos, informacion);
     }
 
-    private Object[][] obtenerMatrizDatos(ArrayList titulosList) throws SQLException {
+    public Object[][] obtenerMatrizDatos(ArrayList titulosList, Boolean filtro, Date desde, Date hasta) throws SQLException {
         //se crea la matriz donde las filas son dinamicas pues corresponde mientras que las columnas son estaticas
 
         ArrayList<String> licenciasNoVigentes = new ArrayList<String>();
@@ -131,16 +141,62 @@ public class ListaLicenciasExpiradas extends JFrame {
                 licenciasNoVigentesAux.remove(0);
             }
 
-            //System.out.println(filasTabla);
-            //System.out.println(licenciasNoVigentesAux);
-            //System.out.println(licenciasNoVigentes);
-
             informacion = new String[filasTabla][titulosList.size()];
-            seteoCamposLicencias(licenciasNoVigentes, informacion);
+            if(!filtro) seteoCamposLicencias(licenciasNoVigentes, informacion);
+            else seteoCamposLicenciasConFechas(licenciasNoVigentes, informacion, desde, hasta);
             filasTabla = 0;
         }
 
         return informacion;
+    }
+
+    public void seteoCamposLicenciasConFechas(ArrayList<String> licenciasNoVigentes, String[][] informacion, Date desde, Date hasta) {
+        int fila = 0;
+        while (!licenciasNoVigentes.isEmpty()) {
+            String[] datosSplitteadosLicencias = licenciasNoVigentes.get(0).split(",");
+
+            String idLicencia = datosSplitteadosLicencias[0];
+            String titular = datosSplitteadosLicencias[1];
+            String fecha = datosSplitteadosLicencias[2];
+
+            //COMPARAMOS LAS FECHAS DESDE HASTA Y FECHA.
+            // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            // String fechaNac_string = sdf.format(titular.getFechaDeNacimiento());
+
+
+
+            String titularBD = "";
+            try {
+                titularBD = getTitularByID(titular);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            assert titularBD != null;
+
+            String[] datosSplitteadosTitular = titularBD.split(",");
+
+            String apellido_nombre = datosSplitteadosTitular[3] + " " + datosSplitteadosTitular[2];
+
+            ArrayList<String> clasesBD = new ArrayList<String>();
+            try {
+                clasesBD = getClaseByID(idLicencia);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            assert clasesBD != null;
+
+            //IF FECHA EN EL FILTRO ESTO SE HACE
+
+            for (int j = 0; j < clasesBD.size(); j++) {
+                informacion[fila][ColumnasTablaLicExp.ID] = idLicencia;
+                informacion[fila][ColumnasTablaLicExp.NOMBRE_APELLIDO] = apellido_nombre;
+                informacion[fila][ColumnasTablaLicExp.FECHA] = fecha;
+                informacion[fila][ColumnasTablaLicExp.CLASE_LICENCIA] = clasesBD.get(j);
+                fila++;
+            }
+
+            licenciasNoVigentes.remove(0);
+        }
     }
 
     public void seteoCamposLicencias(ArrayList<String> licenciasNoVigentes, String[][] informacion) {
