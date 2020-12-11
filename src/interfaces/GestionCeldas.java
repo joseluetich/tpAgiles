@@ -72,7 +72,7 @@ public class GestionCeldas extends DefaultTableCellRenderer{
             }else{
                 colorFondo= colorFondoPorDefecto;
             }
-            this.setHorizontalAlignment( JLabel.LEFT );
+            this.setHorizontalAlignment( JLabel.LEFT);
             this.setText( (String) value );
             this.setForeground( (selected)? new Color(255,255,255) :new Color(0,0,0) );
             //this.setForeground( (selected)? new Color(255,255,255) :new Color(32,117,32) );

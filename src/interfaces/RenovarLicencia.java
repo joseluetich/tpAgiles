@@ -1,7 +1,8 @@
 package src.interfaces;
+import src.bd.ConectarBD;
 import src.bd.ConexionDefault;
-import src.bd.EmitirCopiaDB;
 import src.bd.RenovarLicenciaBD;
+import src.bd.EmitirCopiaDB;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,16 +10,19 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.table.JTableHeader;
 import java.awt.event.*;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.io.IOException;
+import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import static src.bd.EmitirCopiaDB.*;
 
-public class BusquedaTitular extends JFrame implements MouseListener{
-    private JPanel buscarTitularPanel;
+public class RenovarLicencia extends JFrame implements MouseListener{
+    private JPanel renovarLicenciaPanel;
     private JTable licenciasTable;
     private JTextField documentoTextField;
     private JButton buscarButton;
@@ -30,9 +34,28 @@ public class BusquedaTitular extends JFrame implements MouseListener{
     ModeloTabla modelo;
     private int filasTabla = 0;
     private int columnasTabla;
-    private static BusquedaTitular busquedaTitular;
+    private static RenovarLicencia renovarLicencia;
 
-    public BusquedaTitular(JFrame frameQueLoEjecuta) throws SQLException {
+    public static void main(String[] args) throws IOException, SQLException {
+
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            ///
+        }
+
+        renovarLicencia = new RenovarLicencia();
+        renovarLicencia.show();
+
+    }
+
+
+    public RenovarLicencia() throws SQLException {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -44,9 +67,9 @@ public class BusquedaTitular extends JFrame implements MouseListener{
             // If Nimbus is not available, you can set the GUI to another look and feel.
         }
 
-        busquedaTitular = this;
-        add(buscarTitularPanel);
-        setTitle("Busqueda Titular");
+        renovarLicencia = this;
+        add(renovarLicenciaPanel);
+        setTitle("Renovar Licencia");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 500);
         iniciarComponentes();
@@ -87,20 +110,46 @@ public class BusquedaTitular extends JFrame implements MouseListener{
                     JOptionPane.showMessageDialog(null, "Seleccione un titular");
                 }
                 else {
-                    String tipoDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),2).toString();
-                    String numDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),3).toString();
-                    String claseSolicitada = modelo.getValueAt(licenciasTable.getSelectedRow(),5).toString();
-                    String datosTitularBD = "";
+                    String numLicencia = modelo.getValueAt(licenciasTable.getSelectedRow(),4).toString();
+                    String clase = modelo.getValueAt(licenciasTable.getSelectedRow(),5).toString();
+
+                    String datosLicencia = "";
                     try {
-                        datosTitularBD = buscarTitularBD(numDoc,tipoDoc);
+                        datosLicencia = RenovarLicenciaBD.getIdLicencia(numLicencia,clase);
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
-                    assert datosTitularBD != null;
+                    String[] datosSplitteadosLicencias = datosLicencia.split(",");
 
-                    DatosTitular datosTitular = new DatosTitular(busquedaTitular, datosTitularBD, tipoDoc, numDoc, claseSolicitada);
-                    datosTitular.show();
-                    busquedaTitular.hide();
+                    String idLicencia = datosSplitteadosLicencias[0];
+                    String fechaVencimiento = datosSplitteadosLicencias[1];
+
+                    Date dateVencimiento = null;
+                    try {
+                        dateVencimiento = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVencimiento);
+                    } catch (ParseException parseException) {
+                        parseException.printStackTrace();
+                    }
+
+                    Date fechaActual = new Date(); //Obtengo fecha actual
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    String fechaEmision = sdf.format(fechaActual);
+
+                    int dias = (int) ((dateVencimiento.getTime() - fechaActual.getTime()));
+                    System.out.println("Diferencia: "+dias);
+
+                    if(dias>45){
+                        JOptionPane.showMessageDialog(null, "No se puede realizar una renovación de licencia antes de los 45 días del vencimiento de la misma");
+                    }else{
+                        MotivoRenovación motivosRenovacion = null;
+                        try {
+                            motivosRenovacion = new MotivoRenovación(renovarLicencia,idLicencia);
+                        } catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
+                        motivosRenovacion.show();
+                        renovarLicencia.hide();
+                    }
                 }
             }
         });
@@ -108,8 +157,8 @@ public class BusquedaTitular extends JFrame implements MouseListener{
         atrásButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                busquedaTitular.hide();
-                frameQueLoEjecuta.show();
+                renovarLicencia.hide();
+                //frameQueLoEjecuta.show();
             }
         });
 
@@ -118,7 +167,7 @@ public class BusquedaTitular extends JFrame implements MouseListener{
     private void iniciarComponentes() {
 
         scrollPaneTabla = new JScrollPane();
-        buscarTitularPanel.add(scrollPaneTabla);
+        renovarLicenciaPanel.add(scrollPaneTabla);
 
         licenciasTable.setBackground(Color.WHITE);
         licenciasTable.addMouseListener(this);
@@ -126,7 +175,7 @@ public class BusquedaTitular extends JFrame implements MouseListener{
         licenciasTable.setSize(150,300);
         scrollPaneTabla.setViewportView( licenciasTable);
 
-        buscarTitularPanel.add(buscarPanel, BorderLayout.AFTER_LAST_LINE);
+        renovarLicenciaPanel.add(buscarPanel, BorderLayout.AFTER_LAST_LINE);
 
     }
 
@@ -161,7 +210,7 @@ public class BusquedaTitular extends JFrame implements MouseListener{
     private Object[][] obtenerMatrizDatos(ArrayList titulosList) throws SQLException {
         //se crea la matriz donde las filas son dinamicas pues corresponde mientras que las columnas son estaticas
 
-        String informacion[][] = EmitirCopiaDB.getInformacionTabla();
+        String informacion[][] = RenovarLicenciaBD.getInformacionTabla();
         return informacion;
     }
 
@@ -288,6 +337,4 @@ public class BusquedaTitular extends JFrame implements MouseListener{
     }
 
 
-
 }
-

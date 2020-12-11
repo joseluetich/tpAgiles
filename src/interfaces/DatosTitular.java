@@ -41,6 +41,7 @@ public class DatosTitular extends JFrame {
         siguienteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 MotivoEmision motivoEmision = null;
                 try {
                     motivoEmision = new MotivoEmision(datosTitular, numDoc,claseSolicitada);
