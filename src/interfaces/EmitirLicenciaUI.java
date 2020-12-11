@@ -21,7 +21,6 @@ import java.util.*;
 import static src.logica.EmitirLicencia.*;
 
 public class EmitirLicenciaUI extends JFrame {
-
     private JButton botonCancelar;
     private JButton botonNuevoTitular;
     private JButton botonConfirmar;
@@ -160,12 +159,13 @@ public class EmitirLicenciaUI extends JFrame {
                     JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
 
                     int dialogButton = JOptionPane.YES_NO_OPTION;
-                    int dialogResult = JOptionPane.showConfirmDialog(this, "¿Desea imprimir la licencia ahora?", "Imprimir Licencia", dialogButton);
+                    int dialogResult = JOptionPane.showConfirmDialog(this, "¿Desea imprimir la licencia y el comprobante de pago?", "Imprimir", dialogButton);
                     if(dialogResult == 0) {
                         new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText());
                     } else {
 
                     }
+
                     botonCancelar.doClick();
 
                 } catch (SQLException | ParseException | OutputException | BarcodeException throwables) {

@@ -62,6 +62,7 @@ public class MenuPrincipalUI  extends JFrame {
                 }
             }
         });
+
         emitirCopiaLicenciaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
