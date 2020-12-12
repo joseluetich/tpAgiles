@@ -22,35 +22,25 @@ public class CalcularVigenciaLicencia {
         fechaCumpleanios.setMonth(fechaCumpleanios.getMonth());
         //convierto de Date a Time
         LocalDate fechaConvertida = fechaCumpleanios.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        System.out.println(fechaConvertida);
-
         LocalDate fechaCumple = LocalDate.of(fechaConvertida.getYear(),fechaConvertida.getMonth(),fechaConvertida.getDayOfMonth());
         LocalDate fechaActual = LocalDate.now();
 
         LocalDate fechaOtorgamiento = LocalDate.of(fechaActual.getYear(),fechaConvertida.getMonth(),fechaConvertida.getDayOfMonth());
-        System.out.println("Fecha cumpleaños: "+fechaCumple+ " Fecha actual: "+fechaActual);
         int anios= (fechaActual.getYear()-fechaCumple.getYear());
         int mes = (fechaCumple.getMonthValue()- fechaActual.getMonthValue());
         int dias= (fechaCumple.getDayOfMonth()-fechaActual.getDayOfMonth());
-
-        System.out.println("edad: "+anios+ " Meses: "+mes+ " Dias: "+ dias);
-
         String retornoBD = buscarLicencia(dniTitular,idTitular);
-        System.out.println("base de datos retorna:  "+retornoBD);
 
         if(anios<17) {
-            System.out.println("No se le puede otorgar una licencia, edad minima 17 años 1");
             return fechaCumpleanios;
         }
         if(anios>=17 && mes>0 && anios <21){
-            System.out.println("No se le puede otorgar una licencia, edad minima 17 años 2");
             return fechaCumpleanios;
         }
 
         //si no tuvo licencia y es menor a 21 => licencia por 1 años
         if(anios<=21 && retornoBD.isEmpty()){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(1);
-            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
             Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
             return date;
         }
@@ -58,7 +48,6 @@ public class CalcularVigenciaLicencia {
         //si tuvo licencia y es menor de 21 => licencia por 3 año
         if(anios<=21 && !(retornoBD.isEmpty())){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(3);
-            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
             Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
             return date;
         }
@@ -66,21 +55,18 @@ public class CalcularVigenciaLicencia {
         //entre 21 y 46=> licencia por 5 años
         if(anios>21 && anios<46){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(5);
-            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
             Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
             return date;
         }
         //entre 46 y 60 => licencia por 4 años
         if(anios>=46 && anios<60){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(4);
-            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
             Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
             return date;
         }
         //entre 60 y 70 => licencia por 1 año
         if(anios>=60 && anios<70){
             fechaOtorgamiento=fechaOtorgamiento.plusYears(1);
-            System.out.println("FECHA FINAL DEVUELTA "+fechaOtorgamiento);
             Date date = Date.from(fechaOtorgamiento.atStartOfDay(defaultZoneId).toInstant());
             return date;
         }

@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JTable;
 
-public class EmitirComprobante {
+import static src.bd.EmitirComprobanteBD.getIdComprobanteBD_int;
+
+public class EmitirComprobante extends Frame {
     JPanel panelComprobante;
     JTable table1;
-    JLabel nroFacrura;
+    JLabel nroFactura;
     JLabel fechaVencimiento;
     JLabel fechaEmision;
     JLabel nombre;
@@ -35,7 +37,10 @@ public class EmitirComprobante {
     JLabel importeNeto;
     JLabel observaciones;
     JLabel importeBruto;
-    private JLabel picLabel;
+    private JPanel panelFactura;
+    private JPanel panelFacturaA;
+    private JPanel panelTabla;
+    private JPanel panelImporteObs;
     EmitirComprobante emitirComprobante;
     ModeloTabla modelo;
     private int columnasTabla;
@@ -53,16 +58,17 @@ public class EmitirComprobante {
         observaciones.setText(licencia.getObservaciones());
         importeNeto.setText(licencia.getCosto().toString());
         importeBruto.setText(licencia.getCosto().toString());
+        String padded = String.format("%03d", getIdComprobanteBD_int()+1);
+        nroFactura.setText(padded);
 
         String concepto = construirTabla(licencia, tipoClase);
 
+        pack();
        try {
-            imprimirComponente(panelComprobante, false);
+            imprimirComponente(panelComprobante, true);
         } catch (PrinterException exp) {
             exp.printStackTrace();
         }
-
-        System.out.println(concepto);
 
         insertarComprobanteDePago(licencia, concepto, licencia.getCosto().toString(), licencia.getCosto().toString(), String.valueOf(idLicencia));
     }
@@ -75,7 +81,8 @@ public class EmitirComprobante {
     public static void imprimirComponente(JComponent component, boolean fill) throws PrinterException {
         PrinterJob pjob = PrinterJob.getPrinterJob();
         PageFormat pf = pjob.defaultPage();
-            pf.setOrientation(PageFormat.PORTRAIT);
+        pjob.setJobName("Comprobante de Pago");
+        pf.setOrientation(PageFormat.PORTRAIT);
 
         pjob.setPrintable(new ComponentPrinter(component, fill), pf);
         if (pjob.printDialog()) {

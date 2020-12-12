@@ -73,9 +73,6 @@ public class CalcularCosto {
                 }
             }
         }
-
-        System.out.println(vigencia);
-        System.out.println(costo);
         return costo;
     }
 

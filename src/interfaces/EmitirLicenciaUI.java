@@ -117,9 +117,6 @@ public class EmitirLicenciaUI extends JFrame {
                     Date fechaVencimiento_date = CalcularVigenciaLicencia.calcularVigencia(fechaNacimiento_date, campoNroDoc.getText(), String.valueOf(getIdLicencia()));
                     String fechaVencimiento_string = sdf.format(fechaVencimiento_date);
 
-                    System.out.println(fechaVencimiento_date.toString());
-                    System.out.println(fechaVencimiento_string);
-
                     int nroDoc = Integer.parseInt(campoNroDoc.getText());
                     String observaciones = campoObservaciones.getText();
                     String claseSolicitada = Objects.requireNonNull(comboClases.getSelectedItem()).toString();

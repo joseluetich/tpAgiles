@@ -23,9 +23,9 @@ public class ConexionDefault {
             connect=(Connection) DriverManager.getConnection(URL,USER,PASS);
 
             if(connect!=null){
-                System.out.println("Conexión exitosa");
+
             }else{
-                System.out.println("Conexión Fallida");
+
             }
 
         }catch(ClassNotFoundException | SQLException ex){
