@@ -126,7 +126,7 @@ public class EmitirLicenciaBD {
         return retornoBD;
     }
 
-    public static void emitirLicenciaBD(Licencia lic, Clase cla, boolean donante) throws SQLException {
+    public static int emitirLicenciaBD(Licencia lic, Clase cla, boolean donante) throws SQLException {
         ConectarBD conectar = new ConectarBD();
         int idLicencia = getIdLicenciaBD_int()+1;
         Statement stmt = conectar.getStmt();
@@ -199,6 +199,7 @@ public class EmitirLicenciaBD {
         updateLicenciasVigentes(fechaDeVencimiento_string, fechaDeOtorgamiento_string, numeroDeLicencia);
 
         conectar.getCon().close();
+        return idLicencia;
     }
 
     private static void updateLicenciasVigentes(String fechaDeVencimiento, String fechaDeOtorgamiento, int numeroDeLicencia) throws SQLException {
@@ -363,7 +364,7 @@ public class EmitirLicenciaBD {
         return licenciaBD;
     }
 
-    public static void renovarLicencia(Licencia lic, Clase cla, Titular titular) throws SQLException {
+    public static int renovarLicencia(Licencia lic, Clase cla, Titular titular) throws SQLException {
         ConectarBD conectar = new ConectarBD();
         int idLicencia = getIdLicenciaBD_int()+1;
         Statement stmt = conectar.getStmt();
@@ -393,8 +394,8 @@ public class EmitirLicenciaBD {
         insertClase(cla,idLicencia);
         updateTitular(titular.getIdTitular(), titular.getDireccion(), titular.getCodigoPostal(), titular.getDonante());
         updateLicenciasVigentes(fechaDeVencimiento_string, fechaDeOtorgamiento_string, numeroDeLicencia);
-
         conectar.getCon().close();
+        return idLicencia;
     }
 
     private static void updateTitular(Integer idTitular, String direccion, String codigoPostal, Boolean donante) throws SQLException {

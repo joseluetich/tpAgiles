@@ -159,14 +159,15 @@ public class EmitirLicenciaUI extends JFrame {
                     double costo = CalcularCosto.calcularCostoLicencia(lic, fechaVencimiento_date);
                     lic.setCosto(costo);
 
-                    emitirLicencia(lic, cla, donanteDeOrganosCheckBox.isSelected());
+                    int idLicenciaInsertado = emitirLicencia(lic, cla, donanteDeOrganosCheckBox.isSelected());
 
                     JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
 
                     int dialogButton = JOptionPane.YES_NO_OPTION;
                     int dialogResult = JOptionPane.showConfirmDialog(this, "¿Desea imprimir la licencia y el comprobante de pago?", "Imprimir", dialogButton);
                     if(dialogResult == 0) {
-                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText(), clasesTitular);
+                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText(),getClaseByTitular(campoBuscarTitular.getText(), tipoDocIngresado()));
+                        new EmitirComprobante(lic, fechaVencimiento_string, campoFechaOtorgamiento.getText(), tipoClase.valueOf(claseSolicitada).toString(), idLicenciaInsertado);
                     } else {
 
                     }
@@ -325,15 +326,15 @@ public class EmitirLicenciaUI extends JFrame {
                     double costo = CalcularCosto.calcularCostoLicencia(lic, fechaVencimiento_date);
                     lic.setCosto(costo);
 
-                    renovarLicencia(lic, cla, titular);
+                    int idLicenciaRenovado = renovarLicencia(lic, cla, titular);
 
                     JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
 
                     int dialogButton = JOptionPane.YES_NO_OPTION;
                     int dialogResult = JOptionPane.showConfirmDialog(this, "¿Desea imprimir la licencia y el comprobante de pago?", "Imprimir", dialogButton);
                     if (dialogResult == 0) {
-                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText(), clasesTitular);
-                        //new ImprimirComprobante...
+                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText(), getClaseByTitular(campoBuscarTitular.getText(), tipoDocIngresado()));
+                        new EmitirComprobante(lic,fechaVencimiento_string, campoFechaOtorgamiento.getText(), tipoClase, idLicenciaRenovado);
                     } else {
 
                     }

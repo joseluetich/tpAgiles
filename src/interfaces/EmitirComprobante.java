@@ -2,7 +2,10 @@ package src.interfaces;
 
 import net.sourceforge.barbecue.BarcodeException;
 import net.sourceforge.barbecue.output.OutputException;
+import src.bd.EmitirComprobanteBD;
+import src.clases.Licencia;
 
+import javax.sound.midi.SysexMessage;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.PageFormat;
@@ -14,7 +17,9 @@ import java.text.ParseException;
 import javax.swing.JPanel;
 import javax.swing.table.JTableHeader;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JTable;
 
 public class EmitirComprobante {
@@ -29,50 +34,48 @@ public class EmitirComprobante {
     JLabel codigoPostal;
     JLabel importeNeto;
     JLabel observaciones;
-    JLabel iva;
     JLabel importeBruto;
+    private JLabel picLabel;
     EmitirComprobante emitirComprobante;
     ModeloTabla modelo;
     private int columnasTabla;
 
-    public static void main (String[] args) throws ParseException, OutputException, BarcodeException {
-        try
-        {
-            EmitirComprobante imp = new EmitirComprobante();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace ();
-        }
+    public EmitirComprobante(Licencia licencia, String fechaVenc, String fechaOtorg, String tipoClase, int idLicencia) throws OutputException, BarcodeException, ParseException, SQLException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date fechaVenc_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVenc);
 
-    }
+        fechaVencimiento.setText(sdf.format(fechaVenc_date));
+        fechaEmision.setText(fechaOtorg);
+        nombre.setText(licencia.getTitular().getNombre());
+        apellido.setText(licencia.getTitular().getApellido());
+        domicilio.setText(licencia.getTitular().getDireccion());
+        codigoPostal.setText(licencia.getTitular().getCodigoPostal());
+        observaciones.setText(licencia.getObservaciones());
+        importeNeto.setText(licencia.getCosto().toString());
+        importeBruto.setText(licencia.getCosto().toString());
 
-    public EmitirComprobante() throws OutputException, BarcodeException, ParseException, SQLException {
-
-        nroFacrura.setText("123");
-        fechaVencimiento.setText("1/10/1998");
-        fechaEmision.setText("1/1/2000");
-        nombre.setText("Belen");
-        apellido.setText("Eceiza");
-        domicilio.setText("Almirante brown");
-        codigoPostal.setText("3000");
-        importeNeto.setText("$2.224");
-
-
-        construirTabla();
+        String concepto = construirTabla(licencia, tipoClase);
 
        try {
-            imprimirComponente(panelComprobante, true);
+            imprimirComponente(panelComprobante, false);
         } catch (PrinterException exp) {
             exp.printStackTrace();
         }
+
+        System.out.println(concepto);
+
+        insertarComprobanteDePago(licencia, concepto, licencia.getCosto().toString(), licencia.getCosto().toString(), String.valueOf(idLicencia));
+    }
+
+    private void insertarComprobanteDePago(Licencia licencia, String concepto, String importeNeto, String importeBruto, String idLicencia) throws SQLException {
+        EmitirComprobanteBD.insertarComprobanteDePago(licencia, concepto, importeNeto, importeBruto, idLicencia);
     }
 
 
     public static void imprimirComponente(JComponent component, boolean fill) throws PrinterException {
         PrinterJob pjob = PrinterJob.getPrinterJob();
         PageFormat pf = pjob.defaultPage();
-            pf.setOrientation(PageFormat.LANDSCAPE);
+            pf.setOrientation(PageFormat.PORTRAIT);
 
         pjob.setPrintable(new ComponentPrinter(component, fill), pf);
         if (pjob.printDialog()) {
@@ -124,7 +127,7 @@ public class EmitirComprobante {
 
     }
 
-    private void construirTabla() throws SQLException {
+    private String construirTabla(Licencia licencia, String tipoClase) throws SQLException {
 
         ArrayList<String> titulosList = new ArrayList<>();
 
@@ -143,11 +146,13 @@ public class EmitirComprobante {
         //obtenemos los datos de la lista y los guardamos en la matriz
         //que luego se manda a construir la tabla
 
-        Object[][] data = obtenerMatrizDatos(titulosList);
+        Object[][] data = obtenerMatrizDatos(titulosList, licencia, tipoClase);
         construirTabla(titulos,data);
+
+        return (data[1][1]+" y "+data[2][1]);
     }
 
-    private Object[][] obtenerMatrizDatos(ArrayList titulosList) throws SQLException {
+    private Object[][] obtenerMatrizDatos(ArrayList titulosList, Licencia licencia, String tipoClase) throws SQLException {
         //se crea la matriz donde las filas son dinamicas pues corresponde mientras que las columnas son estaticas
 
        // String informacion[][] = RenovarLicenciaBD.getInformacionTabla();
@@ -160,14 +165,19 @@ public class EmitirComprobante {
         informacion[0][3] = "Precio unitario";
         informacion[0][4] = "Importe";
 
-        for(int i=1; i<3; i++){
-            informacion[i][0] = String.valueOf(i+1);
-            informacion[i][1] = "A";
-            informacion[i][2] = "1";
-            informacion[i][3] = "2000";
-            informacion[i][4] = "4000";
-        }
+        double costoLicSinGastosAdm = (licencia.getCosto()-8.00);
 
+        informacion[1][0] = String.valueOf(1);
+        informacion[1][1] = "CLASE "+tipoClase;
+        informacion[1][2] = "1";
+        informacion[1][3] = String.valueOf(costoLicSinGastosAdm);
+        informacion[1][4] = String.valueOf(costoLicSinGastosAdm);
+
+        informacion[2][0] = String.valueOf(2);
+        informacion[2][1] = "Gastos administrativos";
+        informacion[2][2] = "1";
+        informacion[2][3] = "8.00";
+        informacion[2][4] = "8.00";
 
         return informacion;
     }

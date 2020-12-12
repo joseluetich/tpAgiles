@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 import static src.bd.EmitirLicenciaBD.*;
 
@@ -44,8 +43,8 @@ public class EmitirLicencia {
         return EmitirLicenciaBD.getLicenciaByIdLicencia(idLicencia);
     }
 
-    public static void renovarLicencia(Licencia lic, Clase cla, Titular titular) throws SQLException {
-        EmitirLicenciaBD.renovarLicencia(lic, cla, titular);
+    public static int renovarLicencia(Licencia lic, Clase cla, Titular titular) throws SQLException {
+        return EmitirLicenciaBD.renovarLicencia(lic, cla, titular);
     }
 
     public static String getFechaOtorgamiento(String nroDoc, String clase) throws SQLException {
@@ -65,8 +64,8 @@ public class EmitirLicencia {
         return periodo.getYears();
     }
 
-    public static void emitirLicencia(Licencia lic, Clase cla, boolean donante) throws SQLException {
-        emitirLicenciaBD(lic,cla,donante);
+    public static int emitirLicencia(Licencia lic, Clase cla, boolean donante) throws SQLException {
+        return emitirLicenciaBD(lic,cla,donante);
     }
 
 }
