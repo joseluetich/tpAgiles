@@ -15,4 +15,17 @@ public enum tipoDeDocumento {
         }
         return null;
     }
+
+    public static String tipoDocToString(tipoDeDocumento tipo){
+        if(tipo.equals(DNI)){
+            return "DNI";
+        }
+        else if(tipo.equals(LIBRETA_ENROLAMIENTO)){
+            return "LE";
+        }
+        else if(tipo.equals(LIBRETA_CIVICA)){
+            return "LC";
+        }
+        return null;
+    }
 }

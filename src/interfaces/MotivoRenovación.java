@@ -22,15 +22,15 @@ public class MotivoRenovación extends JFrame {
     private CopiaLicencia copiaLicencia = new CopiaLicencia();
     MotivoRenovación motivoRenovación;
    // MenuPrincipalUI menuPrincipalUI = new MenuPrincipalUI();
+    private String motivo;
 
     public MotivoRenovación(JFrame frameQueLoEjecuta, String idLicencia) throws IOException {
-
         motivoRenovación = this;
         add(motivoRenovacionPanel);
         setTitle("Motivos de Renovación");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         setSize(550, 350);
+        setLocationRelativeTo(null);
         vencimientoRadioButton.setSelected(true);
 
         vencimientoRadioButton.addActionListener(new ActionListener() {
@@ -61,7 +61,19 @@ public class MotivoRenovación extends JFrame {
         renovarLicenciaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //pasar idLicencia y el motivo de renovacion al emitir
+                if(modificacionRadioButton.isSelected()){
+                    motivo="MODIFICACION";
+                }
+                else if(vencimientoRadioButton.isSelected()){
+                    motivo="VENCIMIENTO";
+                }
+                try {
+                    EmitirLicenciaUI emitirLicenciaUI = new EmitirLicenciaUI(motivoRenovación, motivo, idLicencia);
+                    emitirLicenciaUI.show();
+                    motivoRenovación.hide();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
 

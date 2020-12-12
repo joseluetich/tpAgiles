@@ -88,18 +88,6 @@ public class CalcularVigenciaLicencia {
         return fechaCumpleanios; //hubo un error
     }
 
-  /*  public static void main(String[] args) throws SQLException, ParseException {
-
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(1999, 12,10);
-        Date fechaCumpl = calendar.getTime();
-
-        Date resultado = calcularVigencia(fechaCumpl,"40258746","5");
-       // System.out.println("fecha devuelta: "+resultado);
-
-    }
-*/
-
     public static String buscarLicencia(String dniTitular, String idTitular) throws SQLException {
         String retornoBD = "";
         ConectarBD conexion =new ConectarBD();

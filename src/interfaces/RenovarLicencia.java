@@ -36,26 +36,7 @@ public class RenovarLicencia extends JFrame implements MouseListener{
     private int columnasTabla;
     private static RenovarLicencia renovarLicencia;
 
-    public static void main(String[] args) throws IOException, SQLException {
-
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            ///
-        }
-
-        renovarLicencia = new RenovarLicencia();
-        renovarLicencia.show();
-
-    }
-
-
-    public RenovarLicencia() throws SQLException {
+    public RenovarLicencia(MenuPrincipalUI menuPrincipalUI) throws SQLException {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -139,7 +120,7 @@ public class RenovarLicencia extends JFrame implements MouseListener{
                     System.out.println("Diferencia: "+dias);
 
                     if(dias>45){
-                        JOptionPane.showMessageDialog(null, "No se puede realizar una renovación de licencia antes de los 45 días del vencimiento de la misma");
+                        JOptionPane.showMessageDialog(null, "Solo se puede realizar una renovación de licencia 45 días antes del vencimiento de la misma");
                     }else{
                         MotivoRenovación motivosRenovacion = null;
                         try {
@@ -158,7 +139,7 @@ public class RenovarLicencia extends JFrame implements MouseListener{
             @Override
             public void actionPerformed(ActionEvent e) {
                 renovarLicencia.hide();
-                //frameQueLoEjecuta.show();
+                menuPrincipalUI.show();
             }
         });
 

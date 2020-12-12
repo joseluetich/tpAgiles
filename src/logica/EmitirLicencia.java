@@ -24,12 +24,28 @@ public class EmitirLicencia {
         return EmitirLicenciaBD.buscarTitularBD(nroDoc,tipoDoc);
     }
 
+    public static Titular getTitularByIdLicencia(String idLicencia) throws SQLException {
+        return EmitirLicenciaBD.getTitularByIdLicencia(idLicencia);
+    }
+
+    public static String getTipoClaseByIdLicencia(String idLicencia) throws SQLException {
+        return EmitirLicenciaBD.getTipoClaseByIdLicencia(idLicencia);
+    }
+
     public static Titular buscarTitularAll(String nroDoc, String tipoDoc) throws SQLException {
         return EmitirLicenciaBD.buscarTitularAll(nroDoc,tipoDoc);
     }
 
     public static int getIdTitular(String nroDoc, String tipoDoc) throws SQLException{
         return EmitirLicenciaBD.getIdTitularBD(nroDoc,tipoDoc);
+    }
+
+    public static Licencia getLicenciaByIdLicencia(String idLicencia) throws SQLException{
+        return EmitirLicenciaBD.getLicenciaByIdLicencia(idLicencia);
+    }
+
+    public static void renovarLicencia(Licencia lic, Clase cla, Titular titular) throws SQLException {
+        EmitirLicenciaBD.renovarLicencia(lic, cla, titular);
     }
 
     public static String getFechaOtorgamiento(String nroDoc, String clase) throws SQLException {
