@@ -166,7 +166,7 @@ public class EmitirLicenciaUI extends JFrame {
                     int dialogButton = JOptionPane.YES_NO_OPTION;
                     int dialogResult = JOptionPane.showConfirmDialog(this, "¿Desea imprimir la licencia y el comprobante de pago?", "Imprimir", dialogButton);
                     if(dialogResult == 0) {
-                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText());
+                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText(), clasesTitular);
                     } else {
 
                     }
@@ -332,7 +332,7 @@ public class EmitirLicenciaUI extends JFrame {
                     int dialogButton = JOptionPane.YES_NO_OPTION;
                     int dialogResult = JOptionPane.showConfirmDialog(this, "¿Desea imprimir la licencia y el comprobante de pago?", "Imprimir", dialogButton);
                     if (dialogResult == 0) {
-                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText());
+                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText(), clasesTitular);
                         //new ImprimirComprobante...
                     } else {
 

@@ -54,17 +54,11 @@ public class ImprimirLicencia extends Frame {
     private JLabel claseG;
     private JLabel codigoDeBarras;
 
-    public ImprimirLicencia(Licencia licencia, String fechaNac, String fechaVenc, String fechaOtorg) throws OutputException, BarcodeException, ParseException {
+    public ImprimirLicencia(Licencia licencia, String fechaNac, String fechaVenc, String fechaOtorg, ArrayList<String> clases) throws OutputException, BarcodeException, ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Date fechaVenc_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVenc);
 
-        ArrayList<String> clasesAsociadas = new ArrayList<>();
-        for(Clase cla : licencia.getClases())
-        {
-            clasesAsociadas.add(cla.getTipo());
-        }
-
-        String listaClases = Arrays.toString(clasesAsociadas.toArray()).replace("[", "").replace("]", "");
+        String listaClases = Arrays.toString(clases.toArray()).replace("[", "").replace("]", "");
 
         nroDeLicencia.setText(licencia.getNumeroDeLicencia().toString());
         apellido.setText(licencia.getTitular().getApellido());
@@ -94,31 +88,31 @@ public class ImprimirLicencia extends Frame {
         claseF.setVisible(false);
         claseG.setVisible(false);
 
-        if (clasesAsociadas.contains("A")){
+        if (clases.contains("A")){
             claseA.setVisible(true);
         }
 
-        if (clasesAsociadas.contains("B")){
+        if (clases.contains("B")){
             claseB.setVisible(true);
         }
 
-        if (clasesAsociadas.contains("C")){
+        if (clases.contains("C")){
             claseC.setVisible(true);
         }
 
-        if (clasesAsociadas.contains("D")){
+        if (clases.contains("D")){
             claseD.setVisible(true);
         }
 
-        if (clasesAsociadas.contains("E")){
+        if (clases.contains("E")){
             claseE.setVisible(true);
         }
 
-        if (clasesAsociadas.contains("F")){
+        if (clases.contains("F")){
             claseF.setVisible(true);
         }
 
-        if (clasesAsociadas.contains("G")){
+        if (clases.contains("G")){
             claseG.setVisible(true);
         }
 
