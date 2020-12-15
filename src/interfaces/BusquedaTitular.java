@@ -53,6 +53,7 @@ public class BusquedaTitular extends JFrame implements MouseListener{
         setLocationRelativeTo(null);
         construirTabla();
 
+        //Botón para buscar un titular por tipo y número de documento
         buscarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -63,6 +64,8 @@ public class BusquedaTitular extends JFrame implements MouseListener{
                 tipoDoc = documentoComboBox.getSelectedItem().toString();
                 num_doc = documentoTextField.getText().toString();
 
+                //Verificamos si se seleccionó un tipo de documento en la lista desplegable y si se colocó un num de documento
+                //Si no se selecciono se informa al usuario, en caso contrario se busca el titular
                 if(!tipoDoc.equals("Seleccionar") && !num_doc.isEmpty()) {
                     try {
                         buscarTitular(tipoDoc, num_doc);
@@ -76,10 +79,11 @@ public class BusquedaTitular extends JFrame implements MouseListener{
             }
         });
 
+        //Botón para verificar que se seleccionó correctamente una licencia
         seleccionarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                //Se verifica que se haya seleccionado un sola licencia de la tabla
                 if(licenciasTable.getSelectedRowCount()>1) {
                     JOptionPane.showMessageDialog(null, "Debe seleccionar un solo titular");
                 }
@@ -87,6 +91,8 @@ public class BusquedaTitular extends JFrame implements MouseListener{
                     JOptionPane.showMessageDialog(null, "Seleccione un titular");
                 }
                 else {
+                    //Cuando se selecciona correctamente la licencia se obtienen los datos de la tabla para buscar
+                    //los datos del titula que le corresponde
                     String tipoDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),2).toString();
                     String numDoc = modelo.getValueAt(licenciasTable.getSelectedRow(),3).toString();
                     String claseSolicitada = modelo.getValueAt(licenciasTable.getSelectedRow(),5).toString();
@@ -98,6 +104,7 @@ public class BusquedaTitular extends JFrame implements MouseListener{
                     }
                     assert datosTitularBD != null;
 
+                    //Una vez obtenidos los datos se los pasa a la pantalla donde se mostraran
                     DatosTitular datosTitular = new DatosTitular(busquedaTitular, datosTitularBD, tipoDoc, numDoc, claseSolicitada);
                     datosTitular.show();
                     busquedaTitular.hide();
@@ -105,6 +112,7 @@ public class BusquedaTitular extends JFrame implements MouseListener{
             }
         });
 
+        //Botón para volver al menú principal
         atrásButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -132,7 +140,6 @@ public class BusquedaTitular extends JFrame implements MouseListener{
 
 //Metodo que permite construir la tabla de licencias
 //se crean primero las columnas y luego se asigna la información
-
     private void construirTabla() throws SQLException {
 
         ArrayList<String> titulosList = new ArrayList<>();

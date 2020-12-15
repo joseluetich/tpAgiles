@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/TPAgiles.iml" filepath="$PROJECT_DIR$/.idea/TPAgiles.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/tpAgiles.iml" filepath="$PROJECT_DIR$/.idea/tpAgiles.iml" />
     </modules>
   </component>
 </project>

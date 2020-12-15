@@ -12,6 +12,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -44,11 +45,20 @@ public class EmitirLicenciaUI extends JFrame {
     private JButton atrasButton;
     private JLabel labelBuscarTitular;
     private JTextField campoCodigoPostal;
+    private JLabel labelTipo;
+    private JLabel labelCUIL;
+    private JLabel labelNacimiento;
+    private JLabel labelDire;
+    private JLabel labelOtorgamiento;
+    private JLabel labelGrupoSanguineo;
+    private JLabel labelObservaciones;
+    private JLabel labelClase;
+    private JLabel labelNombre;
     private static EmitirLicenciaUI emitirLicenciaUI;
     private Date fechaNacimiento_date;
     ArrayList<String> clasesTitular;
 
-    public EmitirLicenciaUI(MenuPrincipalUI menuPrincipalUI) throws SQLException {
+    public EmitirLicenciaUI(MenuPrincipalUI menuPrincipalUI) throws SQLException, IOException {
         emitirLicenciaUI = this;
         add(panelEmitirLicencia);
         setTitle("Emitir Licencia");
@@ -164,10 +174,9 @@ public class EmitirLicenciaUI extends JFrame {
                     int dialogResult = JOptionPane.showConfirmDialog(this, "¿Desea imprimir la licencia y el comprobante de pago?", "Imprimir", dialogButton);
                     if(dialogResult == 0) {
                         new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText(),getClaseByTitular(campoBuscarTitular.getText(), tipoDocIngresado()));
-                        new EmitirComprobante(lic, fechaVencimiento_string, campoFechaOtorgamiento.getText(), tipoClase.valueOf(claseSolicitada).toString(), idLicenciaInsertado);
-                    } else {
-
                     }
+
+                    new EmitirComprobante(dialogResult, lic, fechaVencimiento_string, campoFechaOtorgamiento.getText(), tipoClase.valueOf(claseSolicitada).toString(), idLicenciaInsertado);
 
                     botonCancelar.doClick();
 
@@ -200,7 +209,7 @@ public class EmitirLicenciaUI extends JFrame {
         });
     }
 
-    public EmitirLicenciaUI(MotivoRenovación motivoRenovación, String motivo, String idLicencia) throws SQLException{
+    public EmitirLicenciaUI(MenuPrincipalUI menuPrincipalUI2, MotivoRenovación motivoRenovación, String motivo, String idLicencia) throws SQLException, IOException {
         emitirLicenciaUI = this;
         add(panelEmitirLicencia);
         setTitle("Emitir Licencia");
@@ -262,9 +271,45 @@ public class EmitirLicenciaUI extends JFrame {
         campoFechaOtorgamiento.setEnabled(false);
 
         if(motivo.equals("VENCIMIENTO")) {
+            botonCancelar.setVisible(false);
+            botonNuevoTitular.setVisible(false);
+            campoTipoDoc.setVisible(false);
+            campoNroDoc.setVisible(false);
+            campoNombre.setVisible(false);
+            campoCUIL.setVisible(false);
+            comboClases.setVisible(false);
+            donanteDeOrganosCheckBox.setVisible(false);
+            campoGrupo.setVisible(false);
+            campoFechaOtorgamiento.setVisible(false);
+            campoDireccion.setVisible(false);
+            campoFechaNacimiento.setVisible(false);
+            campoObservaciones.setVisible(false);
+            labelTipoClase.setVisible(false);
+            campoBuscarTitular.setVisible(false);
+            botonBuscar.setVisible(false);
+            comboTipo.setVisible(false);
+            atrasButton.setVisible(false);
             campoCodigoPostal.setVisible(false);
-            campoDireccion.setEnabled(false);
-            campoGrupo.setEnabled(false);
+            labelTipo.setVisible(false);
+            labelCUIL.setVisible(false);
+            labelNacimiento.setVisible(false);
+            labelDire.setVisible(false);
+            labelOtorgamiento.setVisible(false);
+            labelGrupoSanguineo.setVisible(false);
+            labelObservaciones.setVisible(false);
+            labelClase.setVisible(false);
+            labelNombre.setVisible(false);
+            labelBuscarTitular.setVisible(true);
+
+            labelBuscarTitular.setText("La licencia ha sido renovada con éxito!");
+            botonConfirmar.setText("Continuar");
+
+            setSize(350,200);
+            panelEmitirLicencia.setSize(350,200);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null);
+            setResizable(false);
+
         }
 
         if(motivo.equals("MODIFICACION")){
@@ -325,16 +370,19 @@ public class EmitirLicenciaUI extends JFrame {
 
                     int idLicenciaRenovado = renovarLicencia(lic, cla, titular);
 
-                    JOptionPane.showMessageDialog(null, "Licencia emitida correctamente.");
+                    if (motivo.equals("MODIFICACIÓN")) JOptionPane.showMessageDialog(null, "Licencia renovada correctamente");
 
                     int dialogButton = JOptionPane.YES_NO_OPTION;
                     int dialogResult = JOptionPane.showConfirmDialog(this, "¿Desea imprimir la licencia y el comprobante de pago?", "Imprimir", dialogButton);
-                    if (dialogResult == 0) {
-                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText(), getClaseByTitular(campoBuscarTitular.getText(), tipoDocIngresado()));
-                        new EmitirComprobante(lic,fechaVencimiento_string, campoFechaOtorgamiento.getText(), tipoClase, idLicenciaRenovado);
-                    } else {
 
+                    if(dialogResult == 0) {
+                        new ImprimirLicencia(lic, campoFechaNacimiento.getText(), fechaVencimiento_string, campoFechaOtorgamiento.getText(), getClaseByTitular(campoBuscarTitular.getText(), tipoDocIngresado()));
                     }
+                    new EmitirComprobante(dialogResult, lic,fechaVencimiento_string, campoFechaOtorgamiento.getText(), tipoClase, idLicenciaRenovado);
+
+                    menuPrincipalUI2.show();
+                    emitirLicenciaUI.hide();
+
 
                     botonConfirmar.setEnabled(false);
 

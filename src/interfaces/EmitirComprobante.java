@@ -24,7 +24,7 @@ import javax.swing.JTable;
 
 import static src.bd.EmitirComprobanteBD.getIdComprobanteBD_int;
 
-public class EmitirComprobante extends Frame {
+public class EmitirComprobante extends JFrame {
     JPanel panelComprobante;
     JTable table1;
     JLabel nroFactura;
@@ -44,8 +44,9 @@ public class EmitirComprobante extends Frame {
     EmitirComprobante emitirComprobante;
     ModeloTabla modelo;
     private int columnasTabla;
+    JScrollPane scrollPaneTabla;
 
-    public EmitirComprobante(Licencia licencia, String fechaVenc, String fechaOtorg, String tipoClase, int idLicencia) throws OutputException, BarcodeException, ParseException, SQLException {
+    public EmitirComprobante(int seImprime, Licencia licencia, String fechaVenc, String fechaOtorg, String tipoClase, int idLicencia) throws OutputException, BarcodeException, ParseException, SQLException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Date fechaVenc_date = new SimpleDateFormat("yyyy-MM-dd").parse(fechaVenc);
 
@@ -61,13 +62,23 @@ public class EmitirComprobante extends Frame {
         String padded = String.format("%03d", getIdComprobanteBD_int()+1);
         nroFactura.setText(padded);
 
+        table1.setBackground(Color.WHITE);
+        table1.setOpaque(false);
+        table1.setSize(400,45);
+        //scrollPaneTabla.setSize(150,50);
+        scrollPaneTabla.setBackground(Color.WHITE);
+        scrollPaneTabla.setViewportView( table1);
+
         String concepto = construirTabla(licencia, tipoClase);
 
         pack();
-       try {
-            imprimirComponente(panelComprobante, true);
-        } catch (PrinterException exp) {
-            exp.printStackTrace();
+
+        if(seImprime==0){
+           try {
+                imprimirComponente(panelComprobante, true);
+            } catch (PrinterException exp) {
+                exp.printStackTrace();
+            }
         }
 
         insertarComprobanteDePago(licencia, concepto, licencia.getCosto().toString(), licencia.getCosto().toString(), String.valueOf(idLicencia));
@@ -141,7 +152,7 @@ public class EmitirComprobante extends Frame {
         titulosList.add("Pos.");
         titulosList.add("Concepto/Descripción");
         titulosList.add("Cantidad");
-        titulosList.add("Precio unitario");
+        titulosList.add("Precio unit.");
         titulosList.add("Importe");
 
         //se asignan las columnas al arreglo para enviarse al momento de construir la tabla
@@ -156,35 +167,28 @@ public class EmitirComprobante extends Frame {
         Object[][] data = obtenerMatrizDatos(titulosList, licencia, tipoClase);
         construirTabla(titulos,data);
 
-        return (data[1][1]+" y "+data[2][1]);
+        return (data[0][1]+" y "+data[1][1]);
     }
 
     private Object[][] obtenerMatrizDatos(ArrayList titulosList, Licencia licencia, String tipoClase) throws SQLException {
         //se crea la matriz donde las filas son dinamicas pues corresponde mientras que las columnas son estaticas
 
        // String informacion[][] = RenovarLicenciaBD.getInformacionTabla();
-        String informacion[][] = new String[3][5];
-
-
-        informacion[0][0] = "Pos.";
-        informacion[0][1] = "Concepto/Descripción";
-        informacion[0][2] = "Cantidad";
-        informacion[0][3] = "Precio unitario";
-        informacion[0][4] = "Importe";
+        String informacion[][] = new String[2][5];
 
         double costoLicSinGastosAdm = (licencia.getCosto()-8.00);
 
-        informacion[1][0] = String.valueOf(1);
-        informacion[1][1] = "CLASE "+tipoClase;
-        informacion[1][2] = "1";
-        informacion[1][3] = String.valueOf(costoLicSinGastosAdm);
-        informacion[1][4] = String.valueOf(costoLicSinGastosAdm);
+        informacion[0][0] = String.valueOf(1);
+        informacion[0][1] = "CLASE "+tipoClase;
+        informacion[0][2] = "1";
+        informacion[0][3] = String.valueOf(costoLicSinGastosAdm);
+        informacion[0][4] = String.valueOf(costoLicSinGastosAdm);
 
-        informacion[2][0] = String.valueOf(2);
-        informacion[2][1] = "Gastos administrativos";
-        informacion[2][2] = "1";
-        informacion[2][3] = "8.00";
-        informacion[2][4] = "8.00";
+        informacion[1][0] = String.valueOf(2);
+        informacion[1][1] = "Gastos administrativos";
+        informacion[1][2] = "1";
+        informacion[1][3] = "8.00";
+        informacion[1][4] = "8.00";
 
         return informacion;
     }
@@ -212,11 +216,11 @@ public class EmitirComprobante extends Frame {
         table1.setGridColor(new java.awt.Color(0, 0, 0));
 
         //Se define el tamaño de largo para cada columna y su contenido
-        table1.getColumnModel().getColumn(0).setPreferredWidth(2);
-        table1.getColumnModel().getColumn(1).setPreferredWidth(2);
-        table1.getColumnModel().getColumn(2).setPreferredWidth(2);
-        table1.getColumnModel().getColumn(3).setPreferredWidth(2);
-        table1.getColumnModel().getColumn(4).setPreferredWidth(2);
+        table1.getColumnModel().getColumn(0).setPreferredWidth(50);
+        table1.getColumnModel().getColumn(1).setPreferredWidth(200);
+        table1.getColumnModel().getColumn(2).setPreferredWidth(70);
+        table1.getColumnModel().getColumn(3).setPreferredWidth(70);
+        table1.getColumnModel().getColumn(4).setPreferredWidth(70);
 
         //personaliza el encabezado
         JTableHeader jtableHeader = table1.getTableHeader();

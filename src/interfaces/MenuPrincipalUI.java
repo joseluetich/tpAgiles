@@ -58,7 +58,7 @@ public class MenuPrincipalUI  extends JFrame {
                     emitirLicenciaUI.show();
                     menuPrincipalUI.hide();
 
-                } catch (SQLException throwables) {
+                } catch (SQLException | IOException throwables) {
                     throwables.printStackTrace();
                 }
             }

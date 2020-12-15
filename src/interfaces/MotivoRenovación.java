@@ -24,7 +24,7 @@ public class MotivoRenovación extends JFrame {
    // MenuPrincipalUI menuPrincipalUI = new MenuPrincipalUI();
     private String motivo;
 
-    public MotivoRenovación(JFrame frameQueLoEjecuta, String idLicencia) throws IOException {
+    public MotivoRenovación(MenuPrincipalUI menuPrincipalUI, JFrame frameQueLoEjecuta, String idLicencia) throws IOException {
         motivoRenovación = this;
         add(motivoRenovacionPanel);
         setTitle("Motivos de Renovación");
@@ -68,10 +68,10 @@ public class MotivoRenovación extends JFrame {
                     motivo="VENCIMIENTO";
                 }
                 try {
-                    EmitirLicenciaUI emitirLicenciaUI = new EmitirLicenciaUI(motivoRenovación, motivo, idLicencia);
+                    EmitirLicenciaUI emitirLicenciaUI = new EmitirLicenciaUI(menuPrincipalUI, motivoRenovación, motivo, idLicencia);
                     emitirLicenciaUI.show();
                     motivoRenovación.hide();
-                } catch (SQLException throwables) {
+                } catch (SQLException | IOException throwables) {
                     throwables.printStackTrace();
                 }
             }

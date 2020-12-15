@@ -7,26 +7,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="mysql-connector-java" level="project" />
-    <orderEntry type="library" exported="" name="barbecue-1.5-beta1" level="project" />
+    <orderEntry type="library" name="barbecue-1.5-beta1" level="project" />
     <orderEntry type="library" name="jcalendar-1.4" level="project" />
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/jcalendar-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/mysql-connector-java-8.0.16.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="mysql-connector-java-8.0.16" level="project" />
   </component>
 </module>

@@ -117,14 +117,15 @@ public class RenovarLicencia extends JFrame implements MouseListener{
                     String fechaEmision = sdf.format(fechaActual);
 
                     int dias = (int) ((dateVencimiento.getTime() - fechaActual.getTime()));
-                    System.out.println("Diferencia: "+dias);
+                    int diferenciaFechas = dias / (1000 * 60 * 60 * 24);
+                    System.out.println("Diferencia: "+diferenciaFechas);
 
-                    if(dias>45){
+                    if(diferenciaFechas>45){
                         JOptionPane.showMessageDialog(null, "Solo se puede realizar una renovación de licencia 45 días antes del vencimiento de la misma");
                     }else{
                         MotivoRenovación motivosRenovacion = null;
                         try {
-                            motivosRenovacion = new MotivoRenovación(renovarLicencia,idLicencia);
+                            motivosRenovacion = new MotivoRenovación(menuPrincipalUI, renovarLicencia,idLicencia);
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }

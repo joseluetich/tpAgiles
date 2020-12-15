@@ -33,6 +33,7 @@ public class MotivoEmision extends JFrame {
         setSize(550, 350);
         extravíoRadioButton.setSelected(true);
 
+        //Radio button para el extravio
         extravíoRadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -42,6 +43,8 @@ public class MotivoEmision extends JFrame {
                 }
             }
         });
+
+        //Radio button para el robo
         roboRadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -51,6 +54,8 @@ public class MotivoEmision extends JFrame {
                 }
             }
         });
+
+        //Radio button para el deterioro
         deterioroRadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -61,7 +66,7 @@ public class MotivoEmision extends JFrame {
             }
         });
 
-
+        //Botón para volver a la pantalla anterior
         atrásButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -70,6 +75,7 @@ public class MotivoEmision extends JFrame {
             }
         });
 
+        //Botón para emitir la copia
         emitirCopiaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -80,14 +86,12 @@ public class MotivoEmision extends JFrame {
                     throwables.printStackTrace();
                 }
 
-               // copiaLicencia.setIdCopiaLicencia(idLicencia);
-
                 Date fechaActual = new Date(); //Obtengo fecha actual
                 copiaLicencia.setFechaDeEmision(fechaActual);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 String fechaEmision = sdf.format(fechaActual);
 
-
+                //Se obtiene el motivo por el cual se emite la copia
                 if(extravíoRadioButton.isSelected()){
                     copiaLicencia.setMotivos(motivosCopia.EXTRAVIO);
                 }
@@ -98,6 +102,8 @@ public class MotivoEmision extends JFrame {
                     copiaLicencia.setMotivos(motivosCopia.DETERIORO);
                 }
 
+                //Se genera el id de la copia para poder insertarla en la base de datos
+                //Una vez insertada se vuelve al menú principal
                 try {
                     copiaLicencia.setNumeroDeCopia(1+Integer.parseInt(EmitirCopiaDB.getNumCopiasDeLicencia(String.valueOf(idLicencia))));
                     String idCopiaLicencia = EmitirCopiaDB.getIdCopiaLicenciaBD();
@@ -117,10 +123,7 @@ public class MotivoEmision extends JFrame {
                     throwables.printStackTrace();
                 }
 
-
             }
         });
-
-
     }
 }

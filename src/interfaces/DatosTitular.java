@@ -36,14 +36,16 @@ public class DatosTitular extends JFrame {
         setLocationRelativeTo(null);
         setSize(550, 350);
 
+        //Se llenan los campos del tituar en la pantalla
         seteoCamposTitular(DatosTitular, tipoDoc, numDoc, claseSolicitada);
 
+        //Botón donde se pasa a la siguiente pantalla
         siguienteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 MotivoEmision motivoEmision = null;
                 try {
+                    //Se crea la instancia de la próxima pantalla
                     motivoEmision = new MotivoEmision(datosTitular, numDoc,claseSolicitada);
                     motivoEmision.show();
                     datosTitular.hide();
@@ -53,6 +55,7 @@ public class DatosTitular extends JFrame {
             }
         });
 
+        //Botón para volver a la pantalla anterior
         atrásButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

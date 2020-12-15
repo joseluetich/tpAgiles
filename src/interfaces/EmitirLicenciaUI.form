@@ -16,7 +16,7 @@
           <text value="Buscar titular por Documento:"/>
         </properties>
       </component>
-      <component id="b2a96" class="javax.swing.JLabel">
+      <component id="b2a96" class="javax.swing.JLabel" binding="labelTipo">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -24,7 +24,7 @@
           <text value="Tipo y Nro. Documento:"/>
         </properties>
       </component>
-      <component id="ee654" class="javax.swing.JLabel">
+      <component id="ee654" class="javax.swing.JLabel" binding="labelCUIL">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -32,7 +32,7 @@
           <text value="CUIL:"/>
         </properties>
       </component>
-      <component id="d2509" class="javax.swing.JLabel">
+      <component id="d2509" class="javax.swing.JLabel" binding="labelNacimiento">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -40,7 +40,7 @@
           <text value="Fecha de nacimiento:"/>
         </properties>
       </component>
-      <component id="62641" class="javax.swing.JLabel">
+      <component id="62641" class="javax.swing.JLabel" binding="labelDire">
         <constraints>
           <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -48,7 +48,7 @@
           <text value="Dirección:"/>
         </properties>
       </component>
-      <component id="afd2b" class="javax.swing.JLabel">
+      <component id="afd2b" class="javax.swing.JLabel" binding="labelOtorgamiento">
         <constraints>
           <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -56,7 +56,7 @@
           <text value="Fecha de otorgamiento:"/>
         </properties>
       </component>
-      <component id="86a07" class="javax.swing.JLabel">
+      <component id="86a07" class="javax.swing.JLabel" binding="labelGrupoSanguineo">
         <constraints>
           <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -64,7 +64,7 @@
           <text value="Grupo sanguineo y factor RH:"/>
         </properties>
       </component>
-      <component id="7458e" class="javax.swing.JLabel">
+      <component id="7458e" class="javax.swing.JLabel" binding="labelObservaciones">
         <constraints>
           <grid row="9" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -72,7 +72,7 @@
           <text value="Observaciones:"/>
         </properties>
       </component>
-      <component id="cbbad" class="javax.swing.JLabel">
+      <component id="cbbad" class="javax.swing.JLabel" binding="labelClase">
         <constraints>
           <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="84" height="33"/>
@@ -82,7 +82,7 @@
           <text value="Clase solicitada:"/>
         </properties>
       </component>
-      <component id="780b0" class="javax.swing.JLabel">
+      <component id="780b0" class="javax.swing.JLabel" binding="labelNombre">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
