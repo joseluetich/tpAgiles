@@ -62,12 +62,17 @@ public class ListaLicenciasExpiradas extends JFrame {
                 Date fechaDesde = JDateDesde.getDate();
                 Date fechaHasta = JDateHasta.getDate();
 
-                try {
-                    Object[][] informacion = obtenerMatrizDatos(titulosList, true, fechaDesde, fechaHasta);
-                    construirTabla(titulos, informacion);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                //Validamos que la fecha desde sea menor o igual a la fecha hasta
+                if(fechaDesde.before(fechaHasta)||fechaDesde.equals(fechaHasta)){
+                    try {
+                        Object[][] informacion = obtenerMatrizDatos(titulosList, true, fechaDesde, fechaHasta);
+                        construirTabla(titulos, informacion);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                } else JOptionPane.showMessageDialog(null, "Debe seleccionar una fecha 'desde' que sea inferior o igual a la fecha hasta");
+
+
 
             }
         });
@@ -168,8 +173,6 @@ public class ListaLicenciasExpiradas extends JFrame {
             String fecha = datosSplitteadosLicencias[2];
 
             //COMPARAMOS LAS FECHAS DESDE HASTA Y FECHA.
-            // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            // String fechaNac_string = sdf.format(titular.getFechaDeNacimiento());
 
             Boolean filtro_fecha;
             Date fechaD = new SimpleDateFormat("yyyy-MM-dd").parse(fecha);
@@ -185,9 +188,7 @@ public class ListaLicenciasExpiradas extends JFrame {
             assert titularBD != null;
 
             String[] datosSplitteadosTitular = titularBD.split(",");
-
             String apellido_nombre = datosSplitteadosTitular[3] + " " + datosSplitteadosTitular[2];
-
             ArrayList<String> clasesBD = new ArrayList<String>();
             try {
                 clasesBD = getClaseByID(idLicencia);
@@ -196,7 +197,7 @@ public class ListaLicenciasExpiradas extends JFrame {
             }
             assert clasesBD != null;
 
-            //IF FECHA EN EL FILTRO ESTO SE HACE
+            //SI el dato pasa el filtro se procede a insertarlo en la tabla
             if(filtro_fecha) {
                 for (int j = 0; j < clasesBD.size(); j++) {
                     informacion[fila][ColumnasTablaLicExp.ID] = idLicencia;
