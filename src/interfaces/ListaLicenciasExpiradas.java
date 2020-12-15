@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -143,14 +145,20 @@ public class ListaLicenciasExpiradas extends JFrame {
 
             informacion = new String[filasTabla][titulosList.size()];
             if(!filtro) seteoCamposLicencias(licenciasNoVigentes, informacion);
-            else seteoCamposLicenciasConFechas(licenciasNoVigentes, informacion, desde, hasta);
+            else {
+                try {
+                    seteoCamposLicenciasConFechas(licenciasNoVigentes, informacion, desde, hasta);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
             filasTabla = 0;
         }
 
         return informacion;
     }
 
-    public void seteoCamposLicenciasConFechas(ArrayList<String> licenciasNoVigentes, String[][] informacion, Date desde, Date hasta) {
+    public void seteoCamposLicenciasConFechas(ArrayList<String> licenciasNoVigentes, String[][] informacion, Date desde, Date hasta) throws ParseException {
         int fila = 0;
         while (!licenciasNoVigentes.isEmpty()) {
             String[] datosSplitteadosLicencias = licenciasNoVigentes.get(0).split(",");
@@ -163,7 +171,10 @@ public class ListaLicenciasExpiradas extends JFrame {
             // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             // String fechaNac_string = sdf.format(titular.getFechaDeNacimiento());
 
-
+            Boolean filtro_fecha;
+            Date fechaD = new SimpleDateFormat("yyyy-MM-dd").parse(fecha);
+            if(desde.before(fechaD)&&hasta.after(fechaD)) filtro_fecha=true;
+            else filtro_fecha=false;
 
             String titularBD = "";
             try {
@@ -186,13 +197,14 @@ public class ListaLicenciasExpiradas extends JFrame {
             assert clasesBD != null;
 
             //IF FECHA EN EL FILTRO ESTO SE HACE
-
-            for (int j = 0; j < clasesBD.size(); j++) {
-                informacion[fila][ColumnasTablaLicExp.ID] = idLicencia;
-                informacion[fila][ColumnasTablaLicExp.NOMBRE_APELLIDO] = apellido_nombre;
-                informacion[fila][ColumnasTablaLicExp.FECHA] = fecha;
-                informacion[fila][ColumnasTablaLicExp.CLASE_LICENCIA] = clasesBD.get(j);
-                fila++;
+            if(filtro_fecha) {
+                for (int j = 0; j < clasesBD.size(); j++) {
+                    informacion[fila][ColumnasTablaLicExp.ID] = idLicencia;
+                    informacion[fila][ColumnasTablaLicExp.NOMBRE_APELLIDO] = apellido_nombre;
+                    informacion[fila][ColumnasTablaLicExp.FECHA] = fecha;
+                    informacion[fila][ColumnasTablaLicExp.CLASE_LICENCIA] = clasesBD.get(j);
+                    fila++;
+                }
             }
 
             licenciasNoVigentes.remove(0);
